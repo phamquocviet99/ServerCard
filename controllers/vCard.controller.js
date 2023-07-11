@@ -1,6 +1,6 @@
 import decodeJWT from "../middleware/decodeJwt.js";
 import vCardModel from "../models/vCard.model.js";
-
+import validator from "validator";
 export const post = async (req, res) => {
   try {
     const dataUser = decodeJWT(req, res);
@@ -20,15 +20,15 @@ export const post = async (req, res) => {
         message: "Thiếu trường dữ liệu !",
       });
     }
-    if (req.body.email) {
-      if (!validator.isEmail(req.body.email)) {
-        return res.status(400).send({
-          success: false,
-          code: -1,
-          message: "Email không hợp lệ !",
-        });
-      }
+
+    if (!validator.isEmail(req.body.email)) {
+      return res.status(400).send({
+        success: false,
+        code: -1,
+        message: "Email không hợp lệ !",
+      });
     }
+
     if (req.body.phone) {
       if (
         !validator.isMobilePhone(req.body.phone) ||
