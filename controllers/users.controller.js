@@ -30,7 +30,9 @@ export const register = async (req, res, next) => {
         bcrypt.compare(req.body.password, user[0].password, (err, result) => {
           if (err) {
             return res.status(401).json({
-              message: "Sai mật khẩu !",
+              success: false,
+              code: -100,
+              message: "Sai mật khẩu",
             });
           }
           if (result) {
@@ -52,15 +54,19 @@ export const register = async (req, res, next) => {
               },
             });
           }
-          res.status(401).json({
-            message: "Sai mật khẩu !",
+          return res.status(401).json({
+            success: false,
+            code: -100,
+            message: "Sai mật khẩu",
           });
         });
       } else {
         bcrypt.hash(req.body.password, 10, (err, hash) => {
           if (err) {
             return res.status(500).json({
-              error: true,
+              success: false,
+              code: -100,
+              message: "Lỗi nè",
             });
           } else {
             const user = new userModel({
@@ -89,7 +95,6 @@ export const register = async (req, res, next) => {
                 });
               })
               .catch((err) => {
-                console.log(err);
                 res.status(500).json({
                   error: true,
                   success: false,
