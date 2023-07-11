@@ -2,7 +2,7 @@ import frameCardModel from "../models/frameCard.model.js";
 
 export const post = async (req, res) => {
   try {
-    if (!req.body.nameUser || !req.body.image.name || !req.body.image.url) {
+    if (!req.body.image.name || !req.body.image.url) {
       return res.status(400).send({
         success: false,
         code: -1,
@@ -19,7 +19,7 @@ export const post = async (req, res) => {
           message: "Tạo template thành công công góp ý !",
           data: {
             id: result.id,
-            nameUser: result.nameUser,
+
             image: result.image,
             features: result.features,
           },

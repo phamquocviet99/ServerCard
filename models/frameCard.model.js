@@ -2,10 +2,6 @@ import mongoose from "mongoose";
 
 const schema = new mongoose.Schema(
   {
-    nameUser: {
-      type: String,
-      required: true,
-    },
     views: {
       type: Number,
       default: 0,
