@@ -20,6 +20,34 @@ export const post = async (req, res) => {
         message: "Thiếu trường dữ liệu !",
       });
     }
+    if (req.body.email) {
+      if (!validator.isEmail(req.body.email)) {
+        return res.status(400).send({
+          success: false,
+          code: -1,
+          message: "Email không hợp lệ !",
+        });
+      }
+    }
+    if (req.body.phone) {
+      if (
+        !validator.isMobilePhone(req.body.phone) ||
+        req.body.phone.length <= 8
+      ) {
+        return res.status(400).send({
+          success: false,
+          code: -1,
+          message: "Số điện thoại không hợp lệ !",
+        });
+      }
+    }
+    if (req.body.nameUser.match(/[-!@#$%^&*(),.?":{}|<>]/)) {
+      return res.status(400).send({
+        success: false,
+        code: -1,
+        message: "Tên người không hợp lệ !",
+      });
+    }
     req.body.idUser = dataUser.id;
     const newVCard = new vCardModel(req.body);
     await newVCard
@@ -119,6 +147,34 @@ export const update = async (req, res) => {
   try {
     const dataUser = decodeJWT(req, res);
     if (req.params.id) {
+      if (req.body.email) {
+        if (!validator.isEmail(req.body.email)) {
+          return res.status(400).send({
+            success: false,
+            code: -1,
+            message: "Email không hợp lệ !",
+          });
+        }
+      }
+      if (req.body.phone) {
+        if (
+          !validator.isMobilePhone(req.body.phone) ||
+          req.body.phone.length <= 8
+        ) {
+          return res.status(400).send({
+            success: false,
+            code: -1,
+            message: "Số điện thoại không hợp lệ !",
+          });
+        }
+      }
+      if (req.body.nameUser.match(/[-!@#$%^&*(),.?":{}|<>]/)) {
+        return res.status(400).send({
+          success: false,
+          code: -1,
+          message: "Tên người không hợp lệ !",
+        });
+      }
       vCardModel
         .findById({ _id: req.params.id })
         .then((result) => {
