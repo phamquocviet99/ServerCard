@@ -4,6 +4,8 @@ import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import frameCardRoutes from "./routes/frameCard.routes.js";
+import userRoutes from "./routes/users.routes.js";
+import vCardRoutes from "./routes/vCard.routes.js";
 const app = express();
 dotenv.config();
 const PORT = process.env.PORT || 5000;
@@ -19,6 +21,8 @@ app.use(
   })
 );
 app.use("/frame-card", frameCardRoutes);
+app.use("/auth", userRoutes);
+app.use("/v-card", vCardRoutes);
 mongoose
   .connect(URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .catch((err) => {

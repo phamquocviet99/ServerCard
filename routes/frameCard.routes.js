@@ -5,6 +5,7 @@ import {
   findById,
   download,
 } from "../controllers/frameCard.controller.js";
+import checkAuth from "../middleware/check-auth.js";
 
 const router = express.Router();
 
