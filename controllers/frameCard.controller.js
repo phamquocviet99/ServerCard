@@ -67,6 +67,42 @@ export const findById = async (req, res) => {
       frameCardModel
         .findById({ _id: req.params.id })
         .then((result) => {
+          result.views += 1;
+          result.save();
+          return res.status(200).send({
+            success: true,
+            code: 0,
+            message: "Thành công",
+            data: result,
+          });
+        })
+        .catch((error) => {
+          res.status(400).json({
+            error: error.message,
+            message: "Không tìm thấy ID",
+            success: false,
+          });
+        });
+    } else {
+      res.status(200).send({
+        success: false,
+        code: -1,
+        message: "URL không hợp lệ",
+      });
+      return;
+    }
+  } catch (err) {
+    res.status(500).json({ error: true });
+  }
+};
+export const download = async (req, res) => {
+  try {
+    if (req.params.id) {
+      frameCardModel
+        .findById({ _id: req.params.id })
+        .then((result) => {
+          result.downloads += 1;
+          result.save();
           return res.status(200).send({
             success: true,
             code: 0,

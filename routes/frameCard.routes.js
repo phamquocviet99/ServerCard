@@ -1,9 +1,15 @@
 import express from "express";
-import { post, get, findById } from "../controllers/frameCard.controller.js";
+import {
+  post,
+  get,
+  findById,
+  download,
+} from "../controllers/frameCard.controller.js";
 
 const router = express.Router();
 
 router.post("/", post);
+router.post("/download/:id", download);
 router.get("/", get);
 router.get("/:id", findById);
 
