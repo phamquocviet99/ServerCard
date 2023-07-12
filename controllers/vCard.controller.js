@@ -6,13 +6,15 @@ export const post = async (req, res) => {
     const dataUser = decodeJWT(req, res);
     if (
       !req.body.nameUser ||
+      !req.body.nameCard ||
       !req.body.nameCompany ||
       !req.body.email ||
       !req.body.position ||
       !req.body.phone ||
       !req.body.location ||
       !req.body.logo ||
-      !req.body.QRcode
+      !req.body.QRcode ||
+      !req.body.preview
     ) {
       return res.status(400).send({
         success: false,

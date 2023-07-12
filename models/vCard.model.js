@@ -6,6 +6,10 @@ const schema = new mongoose.Schema(
       type: String,
       require: true,
     },
+    nameCard: {
+      type: String,
+      require: true,
+    },
     nameUser: {
       type: String,
       require: true,
@@ -33,6 +37,10 @@ const schema = new mongoose.Schema(
       require: true,
     },
     logo: {
+      type: Object,
+      require: true,
+    },
+    preview: {
       type: Object,
       require: true,
     },
