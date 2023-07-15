@@ -12,7 +12,7 @@ import checkAuth from "../middleware/check-auth.js";
 const router = express.Router();
 
 router.post("/", checkAuth, post);
-router.put("/QRcode", checkAuth, updateQR);
+router.put("/QRcode/:id", checkAuth, updateQR);
 router.get("/", checkAuth, get);
 router.get("/:id", getById);
 router.put("/:id", update);
