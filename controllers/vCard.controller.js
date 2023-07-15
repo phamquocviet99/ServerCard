@@ -12,9 +12,7 @@ export const post = async (req, res) => {
       !req.body.position ||
       !req.body.phone ||
       !req.body.location ||
-      !req.body.logo ||
-      !req.body.QRcode ||
-      !req.body.preview
+      !req.body.logo
     ) {
       return res.status(400).send({
         success: false,
@@ -233,6 +231,75 @@ export const update = async (req, res) => {
     });
   }
 };
+
+export const updateQR = async (req, res) => {
+  try {
+    const dataUser = decodeJWT(req, res);
+    if (!req.body.QRcode || !req.body.preview) {
+      return res.status(400).send({
+        success: false,
+        code: -1,
+        message: "Thiếu trường dữ liệu !",
+      });
+    }
+    if (req.params.id) {
+      vCardModel
+        .findById({ _id: req.params.id })
+        .then((result) => {
+          for (let field in req.body) {
+            if (req.body.hasOwnProperty(field)) {
+              result[field] = req.body[field];
+            }
+          }
+          if (result.idUser === dataUser.id) {
+            result
+              .save()
+              .then((r) => {
+                return res.status(200).send({
+                  success: true,
+                  code: 0,
+                  message: "Thành công",
+                  data: r,
+                });
+              })
+              .catch((err) => {
+                return res.status(500).send({
+                  success: false,
+                  code: -1,
+                  message: err.message,
+                });
+              });
+          } else {
+            return res.status(401).send({
+              success: false,
+              code: 0,
+              message: "Sao sửa card của ngta z bạn",
+            });
+          }
+        })
+        .catch((error) => {
+          return res.status(400).json({
+            error: error.message,
+            message: "Không tìm thấy ID",
+            success: false,
+          });
+        });
+    } else {
+      return res.status(200).send({
+        success: false,
+        code: -1,
+        message: "URL không hợp lệ",
+      });
+    }
+  } catch (err) {
+    return res.status(500).send({
+      success: false,
+      code: -1,
+      message: err.message,
+    });
+  }
+};
+
 export const remove = async (req, res) => {
   try {
     const dataUser = decodeJWT(req, res);
