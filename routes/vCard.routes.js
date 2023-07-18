@@ -5,17 +5,16 @@ import {
   getById,
   update,
   remove,
-  updateQR
 } from "../controllers/vCard.controller.js";
 import checkAuth from "../middleware/check-auth.js";
+import upload from "../middleware/multer.js";
 
 const router = express.Router();
 
-router.post("/", checkAuth, post);
-router.put("/QRcode/:id", checkAuth, updateQR);
+router.post("/", checkAuth, upload.single("logo"), post);
 router.get("/", checkAuth, get);
 router.get("/:id", getById);
-router.put("/:id", update);
-router.delete("/:id", remove);
+router.put("/:id", checkAuth, upload.single("logo"), update);
+router.delete("/:id", checkAuth, remove);
 
 export default router;

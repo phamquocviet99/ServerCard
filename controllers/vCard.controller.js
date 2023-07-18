@@ -1,9 +1,21 @@
+import { deleteS3, uploadS3 } from "../middleware/AWS_S3.js";
 import decodeJWT from "../middleware/decodeJwt.js";
 import vCardModel from "../models/vCard.model.js";
 import validator from "validator";
+import { v4 as uuid } from "uuid";
 export const post = async (req, res) => {
   try {
     const dataUser = decodeJWT(req, res);
+    const file = req.file;
+
+    if (!file) {
+      return res.status(400).send({
+        success: false,
+        code: -1,
+        message: "Thiếu trường dữ liệu !",
+      });
+    }
+
     if (
       !req.body.nameUser ||
       !req.body.nameCard ||
@@ -11,8 +23,7 @@ export const post = async (req, res) => {
       !req.body.email ||
       !req.body.position ||
       !req.body.phone ||
-      !req.body.location ||
-      !req.body.logo
+      !req.body.location
     ) {
       return res.status(400).send({
         success: false,
@@ -48,7 +59,24 @@ export const post = async (req, res) => {
         message: "Tên người không hợp lệ !",
       });
     }
+    const id = uuid();
+    const resultImage = await uploadS3(
+      "v-card",
+      id + "/" + "v-card.avatar.jpeg",
+      file
+    );
+
+    if (!resultImage.success) {
+      return res.status(500).json({
+        error: resultImage.error,
+        message: "Có lỗi trong quá trình upload ảnh",
+        success: false,
+      });
+    }
+
+    req.body._id = id;
     req.body.idUser = dataUser.id;
+    req.body.logo = resultImage.url;
     const newVCard = new vCardModel(req.body);
     await newVCard
       .save()
@@ -145,6 +173,7 @@ export const getById = async (req, res) => {
 
 export const update = async (req, res) => {
   try {
+    const file = req.file;
     const dataUser = decodeJWT(req, res);
     if (req.params.id) {
       if (req.body.email) {
@@ -178,6 +207,7 @@ export const update = async (req, res) => {
       vCardModel
         .findById({ _id: req.params.id })
         .then((result) => {
+          req.body = JSON.parse(JSON.stringify(req.body));
           for (let field in req.body) {
             if (req.body.hasOwnProperty(field)) {
               result[field] = req.body[field];
@@ -186,7 +216,22 @@ export const update = async (req, res) => {
           if (result.idUser === dataUser.id) {
             result
               .save()
-              .then((r) => {
+              .then(async (r) => {
+                if (file) {
+                  const resultImage = await uploadS3(
+                    "v-card",
+                    req.params.id + "/" + "v-card.jpeg",
+                    file
+                  );
+                  console.log(resultImage);
+                  if (!resultImage.success) {
+                    return res.status(500).json({
+                      error: resultImage.error,
+                      message: "Có lỗi trong quá trình upload ảnh",
+                      success: false,
+                    });
+                  }
+                }
                 return res.status(200).send({
                   success: true,
                   code: 0,
@@ -310,11 +355,22 @@ export const remove = async (req, res) => {
           if (result.idUser === dataUser.id) {
             result
               .deleteOne()
-              .then((r) => {
-                return res.status(200).send({
-                  success: true,
+              .then(async (r) => {
+                const resultImage = await deleteS3(
+                  "v-card",
+                  req.params.id + "/" + "v-card.jpeg"
+                );
+                if (resultImage.success) {
+                  return res.status(200).send({
+                    success: true,
+                    code: 0,
+                    message: "Xoá thành công",
+                  });
+                }
+                return res.status(500).send({
+                  success: false,
                   code: 0,
-                  message: "Xoá thành công",
+                  message: "Xoá thất bại",
                 });
               })
               .catch((err) => {

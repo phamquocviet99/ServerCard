@@ -1,16 +1,37 @@
+import { uploadS3 } from "../middleware/AWS_S3.js";
 import frameCardModel from "../models/frameCard.model.js";
+import { v4 as uuid } from "uuid";
 
 export const post = async (req, res) => {
   try {
-    if (!req.body.image.name || !req.body.image.url) {
+    const file = req.file;
+    if (!file) {
       return res.status(400).send({
         success: false,
         code: -1,
         message: "Thiếu trường dữ liệu !",
       });
     }
-    const feedBack = new frameCardModel(req.body);
-    await feedBack
+    const id = uuid();
+
+    const resultImage = await uploadS3(
+      "avatar",
+      id + "/" + "avatar." + file.mimetype.split("/")[1],
+      file
+    );
+    if (!resultImage.success) {
+      return res.status(500).json({
+        error: resultImage.error,
+        message: "Có lỗi trong quá trình upload ảnh",
+        success: false,
+      });
+    }
+    const frameCard = new frameCardModel({
+      _id: id,
+      image: resultImage.url,
+      features: req.body.features,
+    });
+    await frameCard
       .save()
       .then((result) => {
         res.status(200).send({
@@ -19,7 +40,6 @@ export const post = async (req, res) => {
           message: "Tạo template thành công công góp ý !",
           data: {
             id: result.id,
-
             image: result.image,
             features: result.features,
           },
@@ -33,7 +53,7 @@ export const post = async (req, res) => {
         });
       });
   } catch (err) {
-    res
+    return res
       .status(500)
       .json({ error: err, message: "Không thành công", success: false });
   }

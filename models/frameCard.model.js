@@ -2,6 +2,10 @@ import mongoose from "mongoose";
 
 const schema = new mongoose.Schema(
   {
+    _id: {
+      type: String,
+      require: true,
+    },
     views: {
       type: Number,
       default: 0,
@@ -11,15 +15,10 @@ const schema = new mongoose.Schema(
       default: 0,
     },
     image: {
-      name: {
-        type: String,
-        required: true,
-      },
-      url: {
-        type: String,
-        required: true,
-      },
+      type: String,
+      required: true,
     },
+
     features: [],
   },
   { timestamps: true }
