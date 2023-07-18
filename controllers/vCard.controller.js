@@ -62,7 +62,7 @@ export const post = async (req, res) => {
     const id = uuid();
     const resultImage = await uploadS3(
       "v-card",
-      id + "/" + "v-card.avatar.jpeg",
+      id + "/" + "v-card.jpeg",
       file
     );
 
