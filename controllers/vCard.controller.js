@@ -133,6 +133,7 @@ export const getById = async (req, res) => {
       vCardModel
         .findById({ _id: req.params.id })
         .then((result) => {
+     
           if (result) {
             return res.status(200).send({
               success: true,

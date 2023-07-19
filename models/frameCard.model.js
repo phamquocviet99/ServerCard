@@ -30,4 +30,4 @@ schema.set("toJSON", {
     delete ret._id;
   },
 });
-export default mongoose.model("frameCards", schema);
+export default mongoose.model("avatars", schema);

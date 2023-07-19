@@ -25,7 +25,7 @@ app.use(
     origin: "*",
   })
 );
-app.use("/frame-card", frameCardRoutes);
+app.use("/avatar", frameCardRoutes);
 app.use("/auth", userRoutes);
 app.use("/v-card", vCardRoutes);
 
