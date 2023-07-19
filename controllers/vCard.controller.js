@@ -12,7 +12,7 @@ export const post = async (req, res) => {
       return res.status(400).send({
         success: false,
         code: -1,
-        message: "Thiếu trường dữ liệu !",
+        message: "Thiếu file dữ liệu !",
       });
     }
 
