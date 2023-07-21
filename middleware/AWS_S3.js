@@ -74,6 +74,7 @@ export async function deleteS3(folder, name) {
 }
 export async function getUrl(folder, name) {
   try {
+    console.log(name)
     const params = {
       Bucket: bucketName,
       Key: `${folder}/${name}`, // pass key
