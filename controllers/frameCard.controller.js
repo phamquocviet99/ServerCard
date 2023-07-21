@@ -122,6 +122,7 @@ export const findByIdBase64 = async (req, res) => {
             "avatar",
             req.params.id + "/avatar.PNG"
           );
+          
           if (!stringBase64.success) {
             res.status(200).json({
               message: "Không tải được hình ảnh",
