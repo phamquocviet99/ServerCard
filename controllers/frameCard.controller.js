@@ -1,4 +1,4 @@
-import { uploadS3 } from "../middleware/AWS_S3.js";
+import { getUrl, uploadS3 } from "../middleware/AWS_S3.js";
 import frameCardModel from "../models/frameCard.model.js";
 import { v4 as uuid } from "uuid";
 
@@ -13,12 +13,7 @@ export const post = async (req, res) => {
       });
     }
     const id = uuid();
-
-    const resultImage = await uploadS3(
-      "avatar",
-      id + "/" + "avatar." + file.mimetype.split("/")[1],
-      file
-    );
+    const resultImage = await uploadS3("avatar", id + "/" + "avatar.PNG", file);
     if (!resultImage.success) {
       return res.status(500).json({
         error: resultImage.error,
@@ -89,6 +84,51 @@ export const findById = async (req, res) => {
         .then((result) => {
           result.views += 1;
           result.save();
+          return res.status(200).send({
+            success: true,
+            code: 0,
+            message: "Thành công",
+            data: result,
+          });
+        })
+        .catch((error) => {
+          res.status(400).json({
+            error: error.message,
+            message: "Không tìm thấy ID",
+            success: false,
+          });
+        });
+    } else {
+      res.status(200).send({
+        success: false,
+        code: -1,
+        message: "URL không hợp lệ",
+      });
+      return;
+    }
+  } catch (err) {
+    res.status(500).json({ error: true });
+  }
+};
+export const findByIdBase64 = async (req, res) => {
+  try {
+    if (req.params.id) {
+      frameCardModel
+        .findById({ _id: req.params.id })
+        .then(async (result) => {
+          result.views += 1;
+          result.save();
+          const stringBase64 = await getUrl(
+            "avatar",
+            req.params.id + "/avatar.PNG"
+          );
+          if (!stringBase64.success) {
+            res.status(200).json({
+              message: "Không tải được hình ảnh",
+              success: false,
+            });
+          }
+          result.image = stringBase64.data;
           return res.status(200).send({
             success: true,
             code: 0,

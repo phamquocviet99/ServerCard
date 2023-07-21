@@ -4,6 +4,7 @@ import {
   get,
   findById,
   download,
+  findByIdBase64,
 } from "../controllers/frameCard.controller.js";
 import upload from "../middleware/multer.js";
 
@@ -13,5 +14,6 @@ router.post("/", upload.single("image"), post);
 router.post("/download/:id", download);
 router.get("/", get);
 router.get("/:id", findById);
+router.get("/base64/:id", findByIdBase64);
 
 export default router;
