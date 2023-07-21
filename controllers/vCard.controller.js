@@ -2,7 +2,8 @@ import { deleteS3, uploadS3 } from "../middleware/AWS_S3.js";
 import decodeJWT from "../middleware/decodeJwt.js";
 import vCardModel from "../models/vCard.model.js";
 import validator from "validator";
-import { v4 as uuid } from "uuid";
+import { nanoid } from "nanoid";
+const bucketVCARD = process.env.AWS_BUCKET_VCARD;
 export const post = async (req, res) => {
   try {
     const dataUser = decodeJWT(req, res);
@@ -59,8 +60,9 @@ export const post = async (req, res) => {
         message: "Tên người không hợp lệ !",
       });
     }
-    const id = uuid();
+    const id = nanoid();
     const resultImage = await uploadS3(
+      bucketVCARD,
       "v-card",
       id + "/" + "v-card.jpeg",
       file
@@ -133,7 +135,6 @@ export const getById = async (req, res) => {
       vCardModel
         .findById({ _id: req.params.id })
         .then((result) => {
-     
           if (result) {
             return res.status(200).send({
               success: true,
@@ -220,6 +221,7 @@ export const update = async (req, res) => {
               .then(async (r) => {
                 if (file) {
                   const resultImage = await uploadS3(
+                    bucketVCARD,
                     "v-card",
                     req.params.id + "/" + "v-card.jpeg",
                     file
