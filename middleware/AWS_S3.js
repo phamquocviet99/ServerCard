@@ -3,6 +3,7 @@ import AWS3 from "@aws-sdk/client-s3";
 import dotenv from "dotenv";
 import { v4 as uuid } from "uuid";
 import fs from "fs";
+
 dotenv.config();
 
 const bucketName = process.env.AWS_BUCKET;
@@ -46,8 +47,6 @@ export async function uploadS3(folder, name, file) {
       error: error,
     };
   }
-
-  //   return await s3.upload({ pa });
 }
 export async function deleteS3(folder, name) {
   try {
@@ -56,6 +55,7 @@ export async function deleteS3(folder, name) {
       Key: `${folder}/${name}`, // pass key
     };
     const command = new AWS3.DeleteObjectCommand(params);
+    
     const result = await s3Client.send(command);
     if (result.$metadata.httpStatusCode === 204) {
       return {
@@ -71,6 +71,29 @@ export async function deleteS3(folder, name) {
       error: error,
     };
   }
-
-  //   return await s3.upload({ pa });
+}
+export async function getUrl(folder, name) {
+  try {
+    const params = {
+      Bucket: bucketName,
+      Key: `${folder}/${name}`, // pass key
+    };
+    const command = new AWS3.GetObjectCommand(params);
+    const result = await s3Client.send(command);
+    if (result.$metadata.httpStatusCode === 200) {
+      const str = await result.Body.transformToString("base64");
+      return {
+        success: true,
+        data: str,
+      };
+    }
+    return {
+      success: false,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error,
+    };
+  }
 }
