@@ -55,7 +55,7 @@ export async function deleteS3(folder, name) {
       Key: `${folder}/${name}`, // pass key
     };
     const command = new AWS3.DeleteObjectCommand(params);
-    
+
     const result = await s3Client.send(command);
     if (result.$metadata.httpStatusCode === 204) {
       return {
@@ -74,7 +74,6 @@ export async function deleteS3(folder, name) {
 }
 export async function getUrl(folder, name) {
   try {
-    console.log(name)
     const params = {
       Bucket: bucketName,
       Key: `${folder}/${name}`, // pass key
@@ -82,7 +81,7 @@ export async function getUrl(folder, name) {
     const command = new AWS3.GetObjectCommand(params);
     const result = await s3Client.send(command);
     if (result.$metadata.httpStatusCode === 200) {
-      const str = await result.Body.transformToString("base64");
+      const str = await result.Body.transformToByteArray();
       return {
         success: true,
         data: str,
