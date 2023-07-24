@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import validator from "validator";
+import { nanoid } from "nanoid";
 dotenv.config();
 
 export const register = async (req, res, next) => {
@@ -27,38 +28,9 @@ export const register = async (req, res, next) => {
     .exec()
     .then((user) => {
       if (user.length >= 1) {
-        bcrypt.compare(req.body.password, user[0].password, (err, result) => {
-          if (err) {
-            return res.status(401).json({
-              success: false,
-              code: -100,
-              message: "Sai mật khẩu",
-            });
-          }
-          if (result) {
-            const token = jwt.sign(
-              { email: user[0].email, id: user[0]._id },
-              process.env.JWT_KEY,
-              {
-                expiresIn: "100h",
-              }
-            );
-            return res.status(200).json({
-              success: true,
-              code: 0,
-              message: "Đăng nhập thành công",
-              data: {
-                id: user[0]._id,
-                email: user[0].email,
-                token: token,
-              },
-            });
-          }
-          return res.status(401).json({
-            success: false,
-            code: -100,
-            message: "Sai mật khẩu",
-          });
+        return res.status(409).json({
+          success: false,
+          message: "Email đã có người sử dụng",
         });
       } else {
         bcrypt.hash(req.body.password, 10, (err, hash) => {
@@ -66,23 +38,17 @@ export const register = async (req, res, next) => {
             return res.status(500).json({
               success: false,
               code: -100,
-              message: "Lỗi nè",
+              message: "Có lỗi khi tạo người dùng",
             });
           } else {
             const user = new userModel({
+              _id: nanoid(),
               email: req.body.email,
               password: hash,
             });
             user
               .save()
               .then((result) => {
-                const token = jwt.sign(
-                  { email: result.email, id: result._id },
-                  process.env.JWT_KEY,
-                  {
-                    expiresIn: "100h",
-                  }
-                );
                 res.status(200).json({
                   success: true,
                   code: 0,
@@ -90,7 +56,6 @@ export const register = async (req, res, next) => {
                   data: {
                     id: result._id,
                     email: result.email,
-                    token: token,
                   },
                 });
               })
@@ -106,6 +71,59 @@ export const register = async (req, res, next) => {
       }
     });
 };
+export const login = async (req, res) => {
+  userModel
+    .find({ email: req.body.email })
+    .exec()
+    .then((user) => {
+      if (user.length < 1) {
+        return res.status(404).json({
+          success: false,
+          message: "Tài khoản không tồn tại !",
+        });
+      }
+      bcrypt.compare(req.body.password, user[0].password, (err, result) => {
+        if (err) {
+          return res.status(401).json({
+            success: false,
+            code: -100,
+            message: "Sai mật khẩu",
+          });
+        }
+        if (result) {
+          const token = jwt.sign(
+            { email: user[0].email, id: user[0]._id },
+            process.env.JWT_KEY,
+            {
+              expiresIn: "100h",
+            }
+          );
+          return res.status(200).json({
+            success: true,
+            code: 0,
+            message: "Đăng nhập thành công",
+            data: {
+              id: user[0]._id,
+              email: user[0].email,
+              token: token,
+            },
+          });
+        }
+        return res.status(401).json({
+          success: false,
+          code: -100,
+          message: "Sai mật khẩu",
+        });
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        error: err,
+        success: false,
+      });
+    });
+};
+
 export const remove = async (req, res) => {
   userModel
     .remove({ _id: req.params.id })

@@ -1,6 +1,6 @@
-import { uploadS3 } from "../middleware/AWS_S3.js";
+import { deleteS3, uploadS3 } from "../middleware/AWS_S3.js";
 import frameCardModel from "../models/frameCard.model.js";
-import { nanoid } from 'nanoid'
+import { nanoid } from "nanoid";
 const bucketAVT = process.env.AWS_BUCKET_AVT;
 export const post = async (req, res) => {
   try {
@@ -94,6 +94,52 @@ export const findById = async (req, res) => {
             code: 0,
             message: "Thành công",
             data: result,
+          });
+        })
+        .catch((error) => {
+          res.status(400).json({
+            error: error.message,
+            message: "Không tìm thấy ID",
+            success: false,
+          });
+        });
+    } else {
+      res.status(200).send({
+        success: false,
+        code: -1,
+        message: "URL không hợp lệ",
+      });
+      return;
+    }
+  } catch (err) {
+    res.status(500).json({ error: true });
+  }
+};
+
+export const remove = async (req, res) => {
+  try {
+    if (req.params.id) {
+      frameCardModel
+        .findById({ _id: req.params.id })
+        .then((result) => {
+          result.deleteOne().then(async (r) => {
+            const resultImage = await deleteS3(
+              bucketAVT,
+              "avatar",
+              req.params.id + "/" + "avatar.PNG"
+            );
+            if (resultImage.success) {
+              return res.status(200).send({
+                success: true,
+                code: 0,
+                message: "Xoá thành công",
+              });
+            }
+            return res.status(500).send({
+              success: false,
+              code: 0,
+              message: "Xoá thất bại",
+            });
           });
         })
         .catch((error) => {
