@@ -33,20 +33,20 @@ export const register = async (req, res, next) => {
       });
     });
 };
-
+export const getAll = async (req, res) => {
+  try {
+    const users = await userModel.find();
+    res.status(200).json({ success: true, data: users });
+  } catch (err) {
+    res.status(500).json({ error: true });
+  }
+};
 export const download = async (req, res, next) => {
   // Create a new instance of a Workbook class
   var workbook = new excel.Workbook();
 
   // Add Worksheets to the workbook
   var worksheet = workbook.addWorksheet("Danh sách người tham gia");
-
-  var style = workbook.createStyle({
-    font: {
-      color: "#FF0800",
-      size: 12,
-    },
-  });
 
   // Set value of cell A1 to 100 as a number type styled with paramaters of style
   worksheet
