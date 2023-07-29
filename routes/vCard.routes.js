@@ -5,6 +5,7 @@ import {
   getById,
   update,
   remove,
+  postAdmin
 } from "../controllers/vCard.controller.js";
 import checkAuth from "../middleware/check-auth.js";
 import upload from "../middleware/multer.js";
@@ -12,6 +13,7 @@ import upload from "../middleware/multer.js";
 const router = express.Router();
 
 router.post("/", checkAuth, upload.single("logo"), post);
+router.post("/join", upload.single("logo"), postAdmin);
 router.get("/", checkAuth, get);
 router.get("/:id", getById);
 router.put("/:id", checkAuth, upload.single("logo"), update);

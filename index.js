@@ -3,15 +3,10 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-
-import frameCardRoutes from "./routes/frameCard.routes.js";
 import userRoutes from "./routes/users.routes.js";
 import vCardRoutes from "./routes/vCard.routes.js";
+import usersJoinRoutes from "./routes/users.join.routes.js";
 import multer from "multer";
-import upload from "./middleware/multer.js";
-import AWS3, { PutObjectAclCommand, S3Client } from "@aws-sdk/client-s3";
-import { uploadS3 } from "./middleware/AWS_S3.js";
-// import s3Client, { uploadS3 } from "./middleware/AWS_S3.js";
 
 const app = express();
 dotenv.config();
@@ -25,47 +20,23 @@ app.use(
     origin: "*",
   })
 );
-app.use("/avatar", frameCardRoutes);
+
 app.use("/auth", userRoutes);
 app.use("/v-card", vCardRoutes);
-
-app.post("/upload", upload.single("image"), async (req, res) => {
-  try {
-    const file = req.file;
-console.log(file)
-    if (!file) {
-      res.status(400).send("No file uploaded");
-      return;
-    }
-
-    // const result = await uploadS3("v-card", "Viet", req.file);
-    // console.log(result.url)
-    return res.json({ status: "ok" });
-  } catch (error) {
-    res.json({ status: error });
-  }
-});
-
-app.get("/v3/buckets", async (req, res) => {
-  try {
-    const command = new AWS3.ListBucketsCommand({});
-    const resp = await s3Client.send(command);
-    res.send(resp.Buckets);
-  } catch (error) {
-    console.log(error);
-  }
-});
+app.use("/event", usersJoinRoutes);
 
 app.use((error, req, res, next) => {
   if (error instanceof multer.MulterError) {
     if (error.code === "LIMIT_FILE_SIZE") {
       return res.status(400).json({
+        success: false,
         message: "file is too large",
       });
     }
 
     if (error.code === "LIMIT_FILE_COUNT") {
       return res.status(400).json({
+        success: false,
         message: "File limit reached",
       });
     }

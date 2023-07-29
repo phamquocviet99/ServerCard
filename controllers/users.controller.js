@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import validator from "validator";
 import { nanoid } from "nanoid";
+
 dotenv.config();
 
 export const register = async (req, res, next) => {

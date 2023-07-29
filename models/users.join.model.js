@@ -6,20 +6,22 @@ const schema = new mongoose.Schema(
       type: String,
       require: true,
     },
-    views: {
-      type: Number,
-      default: 0,
-    },
-    downloads: {
-      type: Number,
-      default: 0,
-    },
-    image: {
+    email: {
       type: String,
-      required: true,
+      require: true,
     },
-
-    features: [],
+    address: {
+      type: String,
+      require: true,
+    },
+    phone: {
+      type: String,
+      require: true,
+    },
+    fullName: {
+      type: String,
+      require: true,
+    },
   },
   { timestamps: true }
 );
@@ -30,4 +32,4 @@ schema.set("toJSON", {
     delete ret._id;
   },
 });
-export default mongoose.model("avatars", schema);
+export default mongoose.model("usersEvent", schema);

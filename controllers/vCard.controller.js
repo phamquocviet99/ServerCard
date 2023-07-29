@@ -3,41 +3,17 @@ import decodeJWT from "../middleware/decodeJwt.js";
 import vCardModel from "../models/vCard.model.js";
 import validator from "validator";
 import { nanoid } from "nanoid";
+import usersModel from "../models/users.model.js";
 const bucketVCARD = process.env.AWS_BUCKET_VCARD;
 export const post = async (req, res) => {
   try {
     const dataUser = decodeJWT(req, res);
     const file = req.file;
-
-    if (!file) {
-      return res.status(400).send({
-        success: false,
-        code: -1,
-        message: "Thiếu file dữ liệu !",
-      });
-    }
-
-    if (
-      !req.body.nameUser ||
-      !req.body.nameCard ||
-      !req.body.nameCompany ||
-      !req.body.email ||
-      !req.body.position ||
-      !req.body.phone ||
-      !req.body.location
-    ) {
+    if (!req.body.nameUser || !req.body.nameCard || !req.body.phone) {
       return res.status(400).send({
         success: false,
         code: -1,
         message: "Thiếu trường dữ liệu !",
-      });
-    }
-
-    if (!validator.isEmail(req.body.email)) {
-      return res.status(400).send({
-        success: false,
-        code: -1,
-        message: "Email không hợp lệ !",
       });
     }
 
@@ -53,32 +29,109 @@ export const post = async (req, res) => {
         });
       }
     }
-    if (req.body.nameUser.match(/[-!@#$%^&*(),.?":{}|<>]/)) {
-      return res.status(400).send({
-        success: false,
-        code: -1,
-        message: "Tên người không hợp lệ !",
-      });
-    }
     const id = nanoid();
-    const resultImage = await uploadS3(
-      bucketVCARD,
-      "v-card",
-      id + "/" + "v-card.jpeg",
-      file
-    );
-
-    if (!resultImage.success) {
-      return res.status(500).json({
-        error: resultImage.error,
-        message: "Có lỗi trong quá trình upload ảnh",
-        success: false,
-      });
+    if (file) {
+      const resultImage = await uploadS3(
+        bucketVCARD,
+        "v-card",
+        id + "/" + "v-card.jpeg",
+        file
+      );
+      if (!resultImage.success) {
+        return res.status(500).json({
+          error: resultImage.error,
+          message: "Có lỗi trong quá trình upload ảnh",
+          success: false,
+        });
+      }
+      req.body.logo = resultImage.url;
+    } else {
+      req.body.logo =
+        "https://s3-north1.viettelidc.com.vn/fmp-vcard-dev/v-card/XtR-_yZq31xmDnpYOm7DZ/v-card.jpeg";
     }
 
     req.body._id = id;
     req.body.idUser = dataUser.id;
-    req.body.logo = resultImage.url;
+    const newVCard = new vCardModel(req.body);
+    await newVCard
+      .save()
+      .then((result) => {
+        res.status(200).send({
+          success: true,
+          code: 0,
+          message: "Tạo V-Card thành công !",
+          data: result,
+        });
+      })
+      .catch((error) => {
+        res.status(500).json({
+          error: error,
+          message: "Có lỗi trong quá trình thực hiện",
+          success: false,
+        });
+      });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ error: err, message: "Không thành công", success: false });
+  }
+};
+
+export const postAdmin = async (req, res) => {
+  try {
+    const file = req.file;
+    if (!req.body.nameUser || !req.body.phone) {
+      return res.status(400).send({
+        success: false,
+        code: -1,
+        message: "Thiếu trường dữ liệu !",
+      });
+    }
+
+    if (req.body.phone) {
+      if (
+        !validator.isMobilePhone(req.body.phone) ||
+        req.body.phone.length <= 8
+      ) {
+        return res.status(400).send({
+          success: false,
+          code: -1,
+          message: "Số điện thoại không hợp lệ !",
+        });
+      }
+    }
+    const id = nanoid();
+    if (file) {
+      const resultImage = await uploadS3(
+        bucketVCARD,
+        "v-card",
+        id + "/" + "v-card.jpeg",
+        file
+      );
+      if (!resultImage.success) {
+        return res.status(500).json({
+          error: resultImage.error,
+          message: "Có lỗi trong quá trình upload ảnh",
+          success: false,
+        });
+      }
+      req.body.logo = resultImage.url;
+    } else {
+      req.body.logo =
+        "https://s3-north1.viettelidc.com.vn/fmp-vcard-dev/v-card/XtR-_yZq31xmDnpYOm7DZ/v-card.jpeg";
+    }
+
+    req.body._id = id;
+
+    const user = await usersModel.find({ email: "admin@gmail.com" });
+    if (user.length === 0) {
+      return res.status(404).send({
+        success: false,
+        code: 404,
+        message: "Chưa có tài khoản chủ !",
+      });
+    }
+    req.body.idUser = user._id;
     const newVCard = new vCardModel(req.body);
     await newVCard
       .save()
