@@ -2,11 +2,19 @@ import userModel from "../models/users.join.model.js";
 import excel from "excel4node";
 import dotenv from "dotenv";
 import { nanoid } from "nanoid";
+import nodemailer from "nodemailer";
+import base64Img from "base64-img";
+import qr from "qrcode";
+import { templateEmail } from "../template/templateEmail.js";
+import { uploadS3Base64 } from "../middleware/AWS_S3.js";
 
 dotenv.config();
-
+const user = process.env.GMAIL_USER;
+const password = process.env.GMAIL_PASSWORD;
+const service = process.env.MAIL_SERVICE;
+const bucketQRCODE = process.env.AWS_BUCKET_QRCODE;
 export const register = async (req, res, next) => {
-  if (!req.body.fullName || !req.body.phone) {
+  if (!req.body.fullName || !req.body.phone || !req.body.email) {
     return res.status(400).send({
       success: false,
       code: -1,
@@ -14,22 +22,40 @@ export const register = async (req, res, next) => {
     });
   }
   req.body._id = nanoid();
+  const dataImage = await generateQRCodeBase64(req.body._id);
+  if (!dataImage.success) {
+    return res.status(405).json({
+      error: dataImage.error,
+      success: false,
+      code: 500,
+    });
+  }
+
+  const resultImage = await uploadS3Base64(
+    bucketQRCODE,
+    "QRCode",
+    req.body._id + "/" + "QR.jpeg",
+    dataImage.code
+  );
+  if (!resultImage.success) {
+    return res.status(405).json({
+      error: resultImage.error,
+      success: false,
+      code: 500,
+    });
+  }
+  req.body.urlQRcode = resultImage.url;
   const user = new userModel(req.body);
   user
     .save()
-    .then((result) => {
-      res.status(200).json({
-        success: true,
-        code: 0,
-        message: "Đăng kí tham gia thành công !",
-        data: result,
-      });
+    .then(async (result) => {
+      await sendEmail(result, res);
     })
     .catch((err) => {
-      res.status(500).json({
-        error: true,
+      return res.status(500).json({
+        error: err,
         success: false,
-        code: -100,
+        code: 500,
       });
     });
 };
@@ -41,6 +67,64 @@ export const getAll = async (req, res) => {
     res.status(500).json({ error: true });
   }
 };
+export const sendEmail = async (data, res) => {
+  try {
+    const transporter = nodemailer.createTransport({
+      service: service,
+      auth: {
+        user: user,
+        pass: password,
+      },
+    });
+
+    let message = {
+      from: user,
+      to: data.email,
+      subject: "Thư mời tham gia lễ ra mắt Sàn Hoa FMP",
+      html: templateEmail(data),
+    };
+    await transporter
+      .sendMail(message)
+      .then(() => {
+        return res.status(200).json({
+          success: true,
+          code: 0,
+          message: "Đăng kí tham gia thành công !",
+          data: data,
+        });
+      })
+      .catch((er) => {
+        return res.status(500).json({
+          error: er,
+          s: "ss",
+          success: false,
+        });
+      });
+  } catch (err) {
+    return res.status(500).json({
+      error: er,
+      success: false,
+      code: -500,
+    });
+  }
+};
+
+async function generateQRCodeBase64(data) {
+  try {
+    const qrDataURL = await qr.toDataURL(data);
+    return {
+      success: true,
+      code: qrDataURL,
+    };
+  } catch (err) {
+    return {
+      error: err,
+      success: false,
+      code: null,
+    };
+  }
+}
+
 export const download = async (req, res, next) => {
   // Create a new instance of a Workbook class
   var workbook = new excel.Workbook();
@@ -132,4 +216,58 @@ export const download = async (req, res, next) => {
       res.status(500).send("Có lỗi xảy ra khi tải file.");
     }
   });
+};
+export const updateCheckin = async (req, res) => {
+  try {
+    if (!req.params.id) {
+      return res.status(400).send({
+        success: false,
+        code: -1,
+        message: "Thiếu trường dữ liệu !",
+      });
+    }
+    if (req.params.id) {
+      userModel
+        .findById({ _id: req.params.id })
+        .then((result) => {
+          result.isCheckIn = true;
+          result
+            .save()
+            .then((r) => {
+              return res.status(200).send({
+                success: true,
+                code: 0,
+                message: "Thành công",
+                data: r,
+              });
+            })
+            .catch((err) => {
+              return res.status(500).send({
+                success: false,
+                code: -1,
+                message: err.message,
+              });
+            });
+        })
+        .catch((error) => {
+          return res.status(400).json({
+            error: error.message,
+            message: "Không tìm thấy ID",
+            success: false,
+          });
+        });
+    } else {
+      return res.status(200).send({
+        success: false,
+        code: -1,
+        message: "URL không hợp lệ",
+      });
+    }
+  } catch (err) {
+    return res.status(500).send({
+      success: false,
+      code: -1,
+      message: err.message,
+    });
+  }
 };

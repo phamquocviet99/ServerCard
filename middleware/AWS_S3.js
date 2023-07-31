@@ -46,6 +46,42 @@ export async function uploadS3(bucket, folder, name, file) {
     };
   }
 }
+export async function uploadS3Base64(bucket, folder, name, codeBase64) {
+  try {
+  
+    const base64Data = new Buffer.from(
+      codeBase64.replace(/^data:image\/\w+;base64,/, ""),
+      "base64"
+    );
+
+    const type = codeBase64.split(";")[0].split("/")[1];
+    const params = {
+      Bucket: bucket,
+      Key: `${folder}/${name}`, // pass key
+
+      Body: base64Data,
+      ACL: 'public-read',
+      ContentEncoding: 'base64', // required
+      ContentType: `image/${type}` // required. Notice the back ticks
+    };
+    const command = new AWS3.PutObjectCommand(params);
+    const result = await s3Client.send(command);
+    if (result.$metadata.httpStatusCode === 200) {
+      return {
+        success: true,
+        url: endpoint + "/" + bucket + "/" + folder + "/" + name,
+      };
+    }
+    return {
+      success: false,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error,
+    };
+  }
+}
 export async function deleteS3(bucket, folder, name) {
   try {
     const params = {

@@ -22,6 +22,15 @@ const schema = new mongoose.Schema(
       type: String,
       require: true,
     },
+    urlQRcode: {
+      type: String,
+      require: true,
+    },
+    isCheckIn: {
+      type: Boolean,
+      require: true,
+      default: false,
+    },
   },
   { timestamps: true }
 );
