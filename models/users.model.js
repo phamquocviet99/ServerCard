@@ -14,6 +14,11 @@ const schema = new mongoose.Schema(
       type: String,
       require: true,
     },
+    role: {
+      type: String,
+      require: true,
+      default: "user",
+    },
   },
   { timestamps: true }
 );

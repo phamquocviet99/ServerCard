@@ -78,7 +78,7 @@ export const login = async (req, res) => {
     .exec()
     .then((user) => {
       if (user.length < 1) {
-        return res.status(404).json({
+        return res.status(401).json({
           success: false,
           message: "Tài khoản không tồn tại !",
         });
@@ -105,6 +105,7 @@ export const login = async (req, res) => {
             message: "Đăng nhập thành công",
             data: {
               id: user[0]._id,
+              role: user[0].role,
               email: user[0].email,
               token: token,
             },
