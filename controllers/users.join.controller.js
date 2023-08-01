@@ -7,6 +7,7 @@ import base64Img from "base64-img";
 import qr from "qrcode";
 import { templateEmail } from "../template/templateEmail.js";
 import { uploadS3Base64 } from "../middleware/AWS_S3.js";
+import validator from "validator";
 
 dotenv.config();
 const user = process.env.GMAIL_USER;
@@ -14,13 +15,23 @@ const password = process.env.GMAIL_PASSWORD;
 const service = process.env.MAIL_SERVICE;
 const bucketQRCODE = process.env.AWS_BUCKET_QRCODE;
 export const register = async (req, res, next) => {
-  if (!req.body.fullName || !req.body.phone || !req.body.email) {
+  if (!req.body.fullName || !req.body.phone) {
     return res.status(400).send({
       success: false,
       code: -1,
       message: "Thiếu trường dữ liệu !",
     });
   }
+  if (req.body.email) {
+    if (!validator.isEmail(req.body.email)) {
+      return res.status(400).send({
+        success: false,
+        code: -1,
+        message: "Email không hợp lệ !",
+      });
+    }
+  }
+
   req.body._id = nanoid();
   const dataImage = await generateQRCodeBase64(req.body._id);
   if (!dataImage.success) {
@@ -49,7 +60,16 @@ export const register = async (req, res, next) => {
   user
     .save()
     .then(async (result) => {
-      await sendEmail(result, res);
+      if (req.body.email) {
+        await sendEmail(result, res);
+      } else {
+        return res.status(200).json({
+          success: true,
+          code: 0,
+          message: "Đăng kí tham gia thành công !",
+          data: result,
+        });
+      }
     })
     .catch((err) => {
       return res.status(500).json({
@@ -96,7 +116,7 @@ export const sendEmail = async (data, res) => {
       .catch((er) => {
         return res.status(500).json({
           error: er,
-          s: "ss",
+
           success: false,
         });
       });
@@ -124,6 +144,50 @@ async function generateQRCodeBase64(data) {
     };
   }
 }
+
+export const getById = async (req, res) => {
+  try {
+    if (req.params.id) {
+      userModel
+        .findById({ _id: req.params.id })
+        .then((result) => {
+          if (result) {
+            return res.status(200).send({
+              success: true,
+              code: 0,
+              message: "Thành công",
+              data: result,
+            });
+          } else {
+            return res.status(200).send({
+              success: false,
+              code: -1,
+              message: "Không tìm thấy đối tượng",
+            });
+          }
+        })
+        .catch((error) => {
+          return res.status(400).json({
+            error: error.message,
+            message: "Không tìm thấy ID",
+            success: false,
+          });
+        });
+    } else {
+      return res.status(200).send({
+        success: false,
+        code: -1,
+        message: "URL không hợp lệ",
+      });
+    }
+  } catch (err) {
+    return res.status(500).send({
+      success: false,
+      code: -1,
+      message: err.message,
+    });
+  }
+};
 
 export const download = async (req, res, next) => {
   // Create a new instance of a Workbook class
