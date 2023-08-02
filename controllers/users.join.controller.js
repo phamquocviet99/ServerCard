@@ -375,7 +375,13 @@ function getUrlInvitation(data) {
 
 function getUrlInvitation2(data) {
   return new Promise(async function (resolve, reject) {
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+      headless: "new",
+      // `headless: true` (default) enables old Headless;
+      // `headless: 'new'` enables new Headless;
+      // `headless: false` enables “headful” mode.
+    });
+
     const page = await browser.newPage();
     await page.setContent(templateEmail(data));
     page
