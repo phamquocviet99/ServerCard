@@ -9,6 +9,7 @@ import { templateEmail } from "../template/templateEmail.js";
 import { uploadS3Base64, uploadS3Buffer } from "../middleware/AWS_S3.js";
 import validator from "validator";
 import nodeHtmlToImage from "node-html-to-image";
+import puppeteer from "puppeteer";
 
 dotenv.config();
 const user = process.env.GMAIL_USER;
@@ -16,6 +17,11 @@ const password = process.env.GMAIL_PASSWORD;
 const service = process.env.MAIL_SERVICE;
 const bucketQRCODE = process.env.AWS_BUCKET_QRCODE;
 export const register = async (req, res, next) => {
+  var id = null;
+  var urlQRCode = null;
+  id = nanoid();
+  req.body._id = id;
+
   if (!req.body.fullName || !req.body.phone) {
     return res.status(400).send({
       success: false,
@@ -33,67 +39,59 @@ export const register = async (req, res, next) => {
     }
   }
 
-  req.body._id = nanoid();
-  const dataImage = await generateQRCodeBase64(req.body._id);
-  if (!dataImage.success) {
-    return res.status(405).json({
-      error: dataImage.error,
-      success: false,
-      code: 500,
+  await getUrlQRCode(id)
+    .then((url) => (urlQRCode = url))
+    .catch((error) => {
+      return res.status(500).send({
+        success: false,
+        code: -1,
+        message: "Có lỗi trong quá trình tạo QR",
+      });
     });
-  }
 
-  const resultImage = await uploadS3Base64(
-    bucketQRCODE,
-    "QRCode",
-    req.body._id + "/" + "QR.jpeg",
-    dataImage.code
-  );
-  if (!resultImage.success) {
-    return res.status(405).json({
-      error: resultImage.error,
-      success: false,
-      code: 500,
-    });
-  }
   const data = {
+    id: id,
     fullName: req.body.fullName,
-    urlQRcode: resultImage.url,
+    urlQRcode: urlQRCode,
+    email: req.body.email,
   };
-  // const bufferInvitation = await nodeHtmlToImage({
-  //   html: "<html style='width:20px;height:20px'>mẹ mày</html>",
-  //   quantity: 20,
-  // });
-  // const resultInvitation = await uploadS3Buffer(
-  //   bucketQRCODE,
-  //   "invitation",
-  //   req.body._id + "/" + "invitation.jpeg",
-  //   bufferInvitation
-  // );
-  // if (!resultInvitation.success) {
-  //   return res.status(405).json({
-  //     error: resultImage.error,
-  //     success: false,
-  //     code: 500,
+  console.time(`TIME-PROCESS`);
+  // await getUrlInvitation(data)
+  //   .then((url) => (urlInvitation = url))
+  //   .catch((err) => {
+  //     return res.status(500).send({
+  //       success: false,
+  //       code: -1,
+  //       message: "Có lỗi trong quá trình tạo thiệp mời",
+  //     });
   //   });
-  // }
-  req.body.urlInvitation =
-    "https://s3-north1.viettelidc.com.vn/fmp-dev/QRCode/-fpDTWYrXAl4KgY8o4nmP/QR.jpeg";
-  req.body.urlQRcode = resultImage.url;
+
+  // await sendEmail(data).catch((err) => {
+  //   return res.status(500).send({
+  //     success: false,
+  //     code: -1,
+  //     message: "Có lỗi trong quá trình tạo email",
+  //   });
+  // });
+
+  const [urlInvitationResult, resultEmail] = await Promise.all([
+    getUrlInvitation2(data),
+    sendEmail(data),
+  ]);
+  console.timeEnd(`TIME-PROCESS`);
+
+  req.body.urlInvitation = urlInvitationResult;
+  req.body.urlQRcode = urlQRCode;
   const user = new userModel(req.body);
   user
     .save()
     .then(async (result) => {
-      if (req.body.email) {
-        await sendEmail(result, res);
-      } else {
-        return res.status(200).json({
-          success: true,
-          code: 0,
-          message: "Đăng kí tham gia thành công !",
-          data: result,
-        });
-      }
+      return res.status(200).json({
+        success: true,
+        code: 0,
+        message: "Đăng kí tham gia thành công !",
+        data: result,
+      });
     })
     .catch((err) => {
       return res.status(500).json({
@@ -112,8 +110,9 @@ export const getAll = async (req, res) => {
   }
 };
 
-export const sendEmail = async (data, res) => {
+export const sendEmail = (data) => {
   try {
+    if (!data.email) return;
     const transporter = nodemailer.createTransport({
       service: service,
       auth: {
@@ -121,55 +120,26 @@ export const sendEmail = async (data, res) => {
         pass: password,
       },
     });
-
     let message = {
       from: user,
       to: data.email,
       subject: "Thư mời tham gia lễ ra mắt Sàn Hoa FMP",
       html: templateEmail(data),
     };
-
-    await transporter
-      .sendMail(message)
-      .then(() => {
-        return res.status(200).json({
-          success: true,
-          code: 0,
-          message: "Đăng kí tham gia thành công !",
-          data: data,
+    return new Promise(function (resolve, reject) {
+      transporter
+        .sendMail(message)
+        .catch((error) => {
+          reject(new Error(error));
+        })
+        .then((result) => {
+          resolve(result);
         });
-      })
-      .catch((er) => {
-        return res.status(500).json({
-          error: er,
-
-          success: false,
-        });
-      });
-  } catch (err) {
-    return res.status(500).json({
-      error: er,
-      success: false,
-      code: -500,
     });
+  } catch (error) {
+    console.log(error);
   }
 };
-
-async function generateQRCodeBase64(data) {
-  try {
-    const qrDataURL = await qr.toDataURL(data);
-    return {
-      success: true,
-      code: qrDataURL,
-    };
-  } catch (err) {
-    return {
-      error: err,
-      success: false,
-      code: null,
-    };
-  }
-}
 
 export const getById = async (req, res) => {
   try {
@@ -361,3 +331,77 @@ export const updateCheckin = async (req, res) => {
     });
   }
 };
+
+function getUrlQRCode(id) {
+  return new Promise(function (resolve, reject) {
+    qr.toDataURL(id)
+      .then(async (result) => {
+        const data = await uploadS3Base64(
+          bucketQRCODE,
+          "QRCode",
+          id + "/" + "QR.jpeg",
+          result
+        );
+        data.success ? resolve(data.url) : reject(new Error(data.error));
+      })
+      .catch((error) => {
+        reject(new Error(error));
+      });
+  });
+}
+
+function getUrlInvitation(data) {
+  return new Promise(function (resolve, reject) {
+    nodeHtmlToImage({
+      html: templateEmail(data),
+      quantity: 20,
+    })
+      .then(async (result) => {
+        const resultUrl = await uploadS3Buffer(
+          bucketQRCODE,
+          "invitation",
+          nanoid() + "/" + "invitation.jpeg",
+          result
+        );
+        resultUrl.success
+          ? resolve(resultUrl.url)
+          : reject(new Error(resultUrl.error));
+      })
+      .catch((error) => {
+        reject(new Error(error));
+      });
+  });
+}
+
+function getUrlInvitation2(data) {
+  return new Promise(async function (resolve, reject) {
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    await page.setContent(templateEmail(data));
+    page
+      .screenshot()
+      .then(async (result) => {
+        const resultUrl = await uploadS3Buffer(
+          bucketQRCODE,
+          "invitation",
+          nanoid() + "/" + "invitation.jpeg",
+          result
+        );
+        resultUrl.success
+          ? resolve(resultUrl.url)
+          : reject(new Error(resultUrl.error));
+      })
+      .catch((error) => {
+        reject(new Error(error));
+      });
+  });
+}
+
+// async function getU(data) {
+//   const browser = await puppeteer.launch();
+//   const page = await browser.newPage();
+//   await page.setContent(templateEmail(data));
+//   await page.screenshot().then((r) => console.log(r));
+
+//   await browser.close();
+// }
