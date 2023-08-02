@@ -6,8 +6,9 @@ import nodemailer from "nodemailer";
 import base64Img from "base64-img";
 import qr from "qrcode";
 import { templateEmail } from "../template/templateEmail.js";
-import { uploadS3Base64 } from "../middleware/AWS_S3.js";
+import { uploadS3Base64, uploadS3Buffer } from "../middleware/AWS_S3.js";
 import validator from "validator";
+import nodeHtmlToImage from "node-html-to-image";
 
 dotenv.config();
 const user = process.env.GMAIL_USER;
@@ -55,6 +56,28 @@ export const register = async (req, res, next) => {
       code: 500,
     });
   }
+  const data = {
+    fullName: req.body.fullName,
+    urlQRcode: resultImage.url,
+  };
+  const bufferInvitation = await nodeHtmlToImage({
+    html: templateEmail(data),
+    quantity: 80,
+  });
+  const resultInvitation = await uploadS3Buffer(
+    bucketQRCODE,
+    "invitation",
+    req.body._id + "/" + "invitation.jpeg",
+    bufferInvitation
+  );
+  if (!resultInvitation.success) {
+    return res.status(405).json({
+      error: resultImage.error,
+      success: false,
+      code: 500,
+    });
+  }
+  req.body.urlInvitation = resultInvitation.url;
   req.body.urlQRcode = resultImage.url;
   const user = new userModel(req.body);
   user
@@ -87,6 +110,7 @@ export const getAll = async (req, res) => {
     res.status(500).json({ error: true });
   }
 };
+
 export const sendEmail = async (data, res) => {
   try {
     const transporter = nodemailer.createTransport({
@@ -103,6 +127,7 @@ export const sendEmail = async (data, res) => {
       subject: "Thư mời tham gia lễ ra mắt Sàn Hoa FMP",
       html: templateEmail(data),
     };
+
     await transporter
       .sendMail(message)
       .then(() => {

@@ -25,6 +25,10 @@ const schema = new mongoose.Schema(
       type: String,
       require: true,
     },
+    urlInvitation: {
+      type: String,
+      require: true,
+    },
     isCheckIn: {
       type: Boolean,
       require: true,
