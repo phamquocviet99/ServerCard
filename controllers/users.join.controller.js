@@ -74,10 +74,10 @@ export const register = async (req, res, next) => {
   //   });
   // });
 
-  // const [urlInvitationResult, resultEmail] = await Promise.all([
-  //   getUrlInvitation(data),
-  //   sendEmail(data),
-  // ]);
+  const [urlInvitationResult, resultEmail] = await Promise.all([
+    getUrlInvitation(data),
+    sendEmail(data),
+  ]);
   console.timeEnd(`TIME-PROCESS`);
 
   req.body.urlInvitation = "urlInvitationResult";
