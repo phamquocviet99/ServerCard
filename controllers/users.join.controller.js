@@ -80,7 +80,7 @@ export const register = async (req, res, next) => {
   ]);
   console.timeEnd(`TIME-PROCESS`);
 
-  req.body.urlInvitation = "urlInvitationResult";
+  req.body.urlInvitation = urlInvitationResult;
   req.body.urlQRcode = urlQRCode;
   const user = new userModel(req.body);
   user
