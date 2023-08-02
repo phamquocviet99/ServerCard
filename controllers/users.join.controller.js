@@ -60,24 +60,25 @@ export const register = async (req, res, next) => {
     fullName: req.body.fullName,
     urlQRcode: resultImage.url,
   };
-  const bufferInvitation = await nodeHtmlToImage({
-    html: templateEmail(data),
-    quantity: 80,
-  });
-  const resultInvitation = await uploadS3Buffer(
-    bucketQRCODE,
-    "invitation",
-    req.body._id + "/" + "invitation.jpeg",
-    bufferInvitation
-  );
-  if (!resultInvitation.success) {
-    return res.status(405).json({
-      error: resultImage.error,
-      success: false,
-      code: 500,
-    });
-  }
-  req.body.urlInvitation = resultInvitation.url;
+  // const bufferInvitation = await nodeHtmlToImage({
+  //   html: "<html style='width:20px;height:20px'>mẹ mày</html>",
+  //   quantity: 20,
+  // });
+  // const resultInvitation = await uploadS3Buffer(
+  //   bucketQRCODE,
+  //   "invitation",
+  //   req.body._id + "/" + "invitation.jpeg",
+  //   bufferInvitation
+  // );
+  // if (!resultInvitation.success) {
+  //   return res.status(405).json({
+  //     error: resultImage.error,
+  //     success: false,
+  //     code: 500,
+  //   });
+  // }
+  req.body.urlInvitation =
+    "https://s3-north1.viettelidc.com.vn/fmp-dev/QRCode/-fpDTWYrXAl4KgY8o4nmP/QR.jpeg";
   req.body.urlQRcode = resultImage.url;
   const user = new userModel(req.body);
   user
