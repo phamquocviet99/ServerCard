@@ -49,13 +49,13 @@ export const register = async (req, res, next) => {
       });
     });
 
-  const data = {
-    id: id,
-    fullName: req.body.fullName,
-    urlQRcode: urlQRCode,
-    email: req.body.email,
-  };
-  console.time(`TIME-PROCESS`);
+  // const data = {
+  //   id: id,
+  //   fullName: req.body.fullName,
+  //   urlQRcode: urlQRCode,
+  //   // email: req.body.email,
+  // };
+  // console.time(`TIME-PROCESS`);
   // await getUrlInvitation(data)
   //   .then((url) => (urlInvitation = url))
   //   .catch((err) => {
@@ -74,11 +74,11 @@ export const register = async (req, res, next) => {
   //   });
   // });
 
-  const [urlInvitationResult, resultEmail] = await Promise.all([
-    // getUrlInvitation(data),
-    sendEmail(data),
-  ]);
-  console.timeEnd(`TIME-PROCESS`);
+  // const [urlInvitationResult, resultEmail] = await Promise.all([
+  //   // getUrlInvitation(data),
+  //   sendEmail(data),
+  // ]);
+  // console.timeEnd(`TIME-PROCESS`);
 
   req.body.urlInvitation = "urlInvitationResult";
   req.body.urlQRcode = urlQRCode;
