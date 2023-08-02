@@ -9,7 +9,7 @@ import { templateEmail } from "../template/templateEmail.js";
 import { uploadS3Base64, uploadS3Buffer } from "../middleware/AWS_S3.js";
 import validator from "validator";
 import nodeHtmlToImage from "node-html-to-image";
-// import puppeteer from "puppeteer-core";
+import puppeteer from "puppeteer";
 
 dotenv.config();
 const user = process.env.GMAIL_USER;
@@ -75,7 +75,7 @@ export const register = async (req, res, next) => {
   // });
 
   const [urlInvitationResult, resultEmail] = await Promise.all([
-    getUrlInvitation(data),
+    getUrlInvitation2(data),
     sendEmail(data),
   ]);
   console.timeEnd(`TIME-PROCESS`);
@@ -373,35 +373,35 @@ function getUrlInvitation(data) {
   });
 }
 
-// function getUrlInvitation2(data) {
-//   return new Promise(async function (resolve, reject) {
-//     const browser = await puppeteer.launch({
-//       headless: "new",
-//       executablePath: "/path/to/Chrome",
-//       // `headless: 'new'` enables new Headless;
-//       // `headless: false` enables “headful” mode.
-//     });
+function getUrlInvitation2(data) {
+  return new Promise(async function (resolve, reject) {
+    const browser = await puppeteer.launch({
+      headless: "new",
+      // executablePath: "/path/to/Chrome",
+      // `headless: 'new'` enables new Headless;
+      // `headless: false` enables “headful” mode.
+    });
 
-//     const page = await browser.newPage();
-//     await page.setContent(templateEmail(data));
-//     page
-//       .screenshot()
-//       .then(async (result) => {
-//         const resultUrl = await uploadS3Buffer(
-//           bucketQRCODE,
-//           "invitation",
-//           nanoid() + "/" + "invitation.jpeg",
-//           result
-//         );
-//         resultUrl.success
-//           ? resolve(resultUrl.url)
-//           : reject(new Error(resultUrl.error));
-//       })
-//       .catch((error) => {
-//         reject(new Error(error));
-//       });
-//   });
-// }
+    const page = await browser.newPage();
+    await page.setContent(templateEmail(data));
+    page
+      .screenshot()
+      .then(async (result) => {
+        const resultUrl = await uploadS3Buffer(
+          bucketQRCODE,
+          "invitation",
+          nanoid() + "/" + "invitation.jpeg",
+          result
+        );
+        resultUrl.success
+          ? resolve(resultUrl.url)
+          : reject(new Error(resultUrl.error));
+      })
+      .catch((error) => {
+        reject(new Error(error));
+      });
+  });
+}
 
 // async function getU(data) {
 //   const browser = await puppeteer.launch();
