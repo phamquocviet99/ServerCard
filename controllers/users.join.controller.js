@@ -3,13 +3,13 @@ import excel from "excel4node";
 import dotenv from "dotenv";
 import { nanoid } from "nanoid";
 import nodemailer from "nodemailer";
-import base64Img from "base64-img";
+// import base64Img from "base64-img";
 import qr from "qrcode";
 import { templateEmail } from "../template/templateEmail.js";
 import { uploadS3Base64, uploadS3Buffer } from "../middleware/AWS_S3.js";
 import validator from "validator";
 import nodeHtmlToImage from "node-html-to-image";
-import puppeteer from "puppeteer";
+// import puppeteer from "puppeteer-core";
 
 dotenv.config();
 const user = process.env.GMAIL_USER;
@@ -75,7 +75,7 @@ export const register = async (req, res, next) => {
   // });
 
   const [urlInvitationResult, resultEmail] = await Promise.all([
-    getUrlInvitation2(data),
+    getUrlInvitation(data),
     sendEmail(data),
   ]);
   console.timeEnd(`TIME-PROCESS`);
@@ -373,35 +373,35 @@ function getUrlInvitation(data) {
   });
 }
 
-function getUrlInvitation2(data) {
-  return new Promise(async function (resolve, reject) {
-    const browser = await puppeteer.launch({
-      headless: "new",
-      // `headless: true` (default) enables old Headless;
-      // `headless: 'new'` enables new Headless;
-      // `headless: false` enables “headful” mode.
-    });
+// function getUrlInvitation2(data) {
+//   return new Promise(async function (resolve, reject) {
+//     const browser = await puppeteer.launch({
+//       headless: "new",
+//       executablePath: "/path/to/Chrome",
+//       // `headless: 'new'` enables new Headless;
+//       // `headless: false` enables “headful” mode.
+//     });
 
-    const page = await browser.newPage();
-    await page.setContent(templateEmail(data));
-    page
-      .screenshot()
-      .then(async (result) => {
-        const resultUrl = await uploadS3Buffer(
-          bucketQRCODE,
-          "invitation",
-          nanoid() + "/" + "invitation.jpeg",
-          result
-        );
-        resultUrl.success
-          ? resolve(resultUrl.url)
-          : reject(new Error(resultUrl.error));
-      })
-      .catch((error) => {
-        reject(new Error(error));
-      });
-  });
-}
+//     const page = await browser.newPage();
+//     await page.setContent(templateEmail(data));
+//     page
+//       .screenshot()
+//       .then(async (result) => {
+//         const resultUrl = await uploadS3Buffer(
+//           bucketQRCODE,
+//           "invitation",
+//           nanoid() + "/" + "invitation.jpeg",
+//           result
+//         );
+//         resultUrl.success
+//           ? resolve(resultUrl.url)
+//           : reject(new Error(resultUrl.error));
+//       })
+//       .catch((error) => {
+//         reject(new Error(error));
+//       });
+//   });
+// }
 
 // async function getU(data) {
 //   const browser = await puppeteer.launch();
