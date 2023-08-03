@@ -9,6 +9,7 @@ import usersJoinRoutes from "./routes/users.join.routes.js";
 import multer from "multer";
 import { checkSendEmail } from "./controllers/taskSendInvitation.controller.js";
 
+
 const app = express();
 dotenv.config();
 const PORT = process.env.PORT || 5000;
@@ -26,19 +27,23 @@ app.use("/auth", userRoutes);
 app.use("/v-card", vCardRoutes);
 app.use("/event", usersJoinRoutes);
 
-app.get("/test", checkSendEmail);
+app.get("/test",checkSendEmail)
 
 // app.use("/images", express.static("uploads"));
 
-const base64Image =
-  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADIAQMAAACXljzdAAAABlBMVEX///8AAABVwtN+AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAA/UlEQVRYheWXzRGEIAyFn8OBIyVQCqVJaZZiCR49OJvNDyrOrg2EHGTCx8WY9wzAa8xksQKTLLHlH39ksRdeE6coazw0jx5Jlq35qsEhyzYmSfzptTruiXz6YcmphR2gBf9U4oSc/pb2SVV/+9sw5I7YJ4/wQawGsmgf5D1Ib0hT+CRUs8hZft+Bk77jByAoRIduReo6nqvjjbC/yRay9gGHOvlghJ/BZhegVaciOSRX2OxCqnp6OLl70lRPOr/xHx3BDsAfWbQCs6keNruUxw3MDclkM7lNaXIJqXZ4TNJm8lq2EYj423CkaeGcye0G5pH0/sZEz/06n2vyGl+afuLpQXhsfAAAAABJRU5ErkJggg=="; // Đây là dữ liệu hình ảnh base64 thực tế
 
-app.get("/image.png", (req, res) => {
-  res.set("Content-Type", "image/jpeg");
-  res.send(
-    `<img src="https://s3-north1.viettelidc.com.vn/fmp-dev/QRCode/xnqRDwuqIOqVEs33j8huc/QR.jpeg" alt="Base64 Image">`
-  );
+
+const base64Image = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADIAQMAAACXljzdAAAABlBMVEX///8AAABVwtN+AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAA/UlEQVRYheWXzRGEIAyFn8OBIyVQCqVJaZZiCR49OJvNDyrOrg2EHGTCx8WY9wzAa8xksQKTLLHlH39ksRdeE6coazw0jx5Jlq35qsEhyzYmSfzptTruiXz6YcmphR2gBf9U4oSc/pb2SVV/+9sw5I7YJ4/wQawGsmgf5D1Ib0hT+CRUs8hZft+Bk77jByAoRIduReo6nqvjjbC/yRay9gGHOvlghJ/BZhegVaciOSRX2OxCqnp6OLl70lRPOr/xHx3BDsAfWbQCs6keNruUxw3MDclkM7lNaXIJqXZ4TNJm8lq2EYj423CkaeGcye0G5pH0/sZEz/06n2vyGl+afuLpQXhsfAAAAABJRU5ErkJggg=="; // Đây là dữ liệu hình ảnh base64 thực tế
+
+app.get('/image.png', (req, res) => {
+  res.setHeader('Last-Modified', (new Date()).toUTCString());
+  res.send(`<img src="${base64Image}" alt="Base64 Image">`);
 });
+
+
+
+
+
 
 app.use((error, req, res, next) => {
   if (error instanceof multer.MulterError) {
@@ -63,8 +68,6 @@ app.use((error, req, res, next) => {
     }
   }
 });
-
-// app.disable('etag');
 
 mongoose
   .connect(URI, { useNewUrlParser: true, useUnifiedTopology: true })
