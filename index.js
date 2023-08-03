@@ -1,4 +1,5 @@
 import express from "express";
+import request from "request";
 import bodyParser from "body-parser";
 import cors from "cors";
 import mongoose from "mongoose";
@@ -31,12 +32,32 @@ app.get("/test", checkSendEmail);
 // app.use("/images", express.static("uploads"));
 
 const base64Image =
-  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADIAQMAAACXljzdAAAABlBMVEX///8AAABVwtN+AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAA/UlEQVRYheWXzRGEIAyFn8OBIyVQCqVJaZZiCR49OJvNDyrOrg2EHGTCx8WY9wzAa8xksQKTLLHlH39ksRdeE6coazw0jx5Jlq35qsEhyzYmSfzptTruiXz6YcmphR2gBf9U4oSc/pb2SVV/+9sw5I7YJ4/wQawGsmgf5D1Ib0hT+CRUs8hZft+Bk77jByAoRIduReo6nqvjjbC/yRay9gGHOvlghJ/BZhegVaciOSRX2OxCqnp6OLl70lRPOr/xHx3BDsAfWbQCs6keNruUxw3MDclkM7lNaXIJqXZ4TNJm8lq2EYj423CkaeGcye0G5pH0/sZEz/06n2vyGl+afuLpQXhsfAAAAABJRU5ErkJggg=="; // Đây là dữ liệu hình ảnh base64 thực tế
+  "iVBORw0KGgoAAAANSUhEUgAAAMgAAADIAQMAAACXljzdAAAABlBMVEX///8AAABVwtN+AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAA/UlEQVRYheWXzRGEIAyFn8OBIyVQCqVJaZZiCR49OJvNDyrOrg2EHGTCx8WY9wzAa8xksQKTLLHlH39ksRdeE6coazw0jx5Jlq35qsEhyzYmSfzptTruiXz6YcmphR2gBf9U4oSc/pb2SVV/+9sw5I7YJ4/wQawGsmgf5D1Ib0hT+CRUs8hZft+Bk77jByAoRIduReo6nqvjjbC/yRay9gGHOvlghJ/BZhegVaciOSRX2OxCqnp6OLl70lRPOr/xHx3BDsAfWbQCs6keNruUxw3MDclkM7lNaXIJqXZ4TNJm8lq2EYj423CkaeGcye0G5pH0/sZEz/06n2vyGl+afuLpQXhsfAAAAABJRU5ErkJggg=="; // Đây là dữ liệu hình ảnh base64 thực tế
 
-app.get("/image.png", (req, res) => {
+app.get("/image.png", async (req, res) => {
   res.status(200);
-  res.setHeader("Last-Modified", new Date().toUTCString());
-  res.send(`<img src="${base64Image}" alt="Base64 Image">`);
+  res.set("Content-Type", "image/jpeg");
+  const da = Buffer.from(base64Image, "base64");
+  res.send(da);
+});
+
+app.get("/images.png", async (req, res) => {
+  const url =
+    "https://s3-north1.viettelidc.com.vn/fmp-dev/QRCode/IJQkb6KhtwRFBAvUDUs9e/QR.jpeg";
+
+  request(
+    {
+      url: url,
+      encoding: null,
+    },
+    (err, resp, buffer) => {
+      if (!err && resp.statusCode === 200) {
+        console.log(resp.body);
+        res.set("Content-Type", "image/jpeg");
+        res.send(resp.body);
+      }
+    }
+  );
 });
 
 app.use((error, req, res, next) => {

@@ -41,6 +41,7 @@
     "nodemon": "^2.0.21",
     "otp-generator": "^4.0.1",
     "qrcode": "^1.5.3",
+    "request": "^2.88.2",
     "validator": "^13.9.0"
   }
 }
