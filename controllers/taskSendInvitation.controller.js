@@ -34,13 +34,13 @@ export const checkSendEmail = async () => {
     }
     Promise.all(taskSend)
       .then((results) => {
-        console.log("All tasks completed successfully:");
+        console.log("All tasks completed successfully");
         // results.forEach((result) => {
         //   console.log(result);
         // });
       })
       .catch((error) => {
-        console.error("Some tasks failed:");
+        console.error("Some tasks failed");
         // console.error(error);
       });
   } catch (error) {}

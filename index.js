@@ -8,7 +8,7 @@ import vCardRoutes from "./routes/vCard.routes.js";
 import usersJoinRoutes from "./routes/users.join.routes.js";
 import genQRcodeRoutes from "./routes/genQRcode.routes.js";
 import multer from "multer";
-import qr from "qrcode";
+import schedule from "node-schedule";
 import { checkSendEmail } from "./controllers/taskSendInvitation.controller.js";
 
 const app = express();
@@ -30,27 +30,8 @@ app.use("/event", usersJoinRoutes);
 app.use("/images", genQRcodeRoutes);
 app.get("/test", checkSendEmail);
 
-// app.use("/images", express.static("uploads"));
-
-const base64Image =
-  "iVBORw0KGgoAAAANSUhEUgAAAMgAAADIAQMAAACXljzdAAAABlBMVEX///8AAABVwtN+AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAA/UlEQVRYheWXzRGEIAyFn8OBIyVQCqVJaZZiCR49OJvNDyrOrg2EHGTCx8WY9wzAa8xksQKTLLHlH39ksRdeE6coazw0jx5Jlq35qsEhyzYmSfzptTruiXz6YcmphR2gBf9U4oSc/pb2SVV/+9sw5I7YJ4/wQawGsmgf5D1Ib0hT+CRUs8hZft+Bk77jByAoRIduReo6nqvjjbC/yRay9gGHOvlghJ/BZhegVaciOSRX2OxCqnp6OLl70lRPOr/xHx3BDsAfWbQCs6keNruUxw3MDclkM7lNaXIJqXZ4TNJm8lq2EYj423CkaeGcye0G5pH0/sZEz/06n2vyGl+afuLpQXhsfAAAAABJRU5ErkJggg=="; // Đây là dữ liệu hình ảnh base64 thực tế
-
-app.get("/image.png", async (req, res) => {
-  await qr
-    .toDataURL("2ieh2ohdeuhdedhue")
-    .then((data) => {
-      res.status(200);
-      res.set("Content-Type", "image/jpeg");
-      const da = Buffer.from(base64Image, "base64");
-      res.send(da);
-    })
-    .catch((err) => {
-      res.status(500).send({ success: false });
-    });
-  // res.status(200);
-  // res.set("Content-Type", "image/jpeg");
-  // const da = Buffer.from(base64Image, "base64");
-  // res.send(da);
+schedule.scheduleJob("*/3600 * * * * *", function () {
+  checkSendEmail();
 });
 
 app.use((error, req, res, next) => {
