@@ -34,7 +34,7 @@ const base64Image =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADIAQMAAACXljzdAAAABlBMVEX///8AAABVwtN+AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAA/UlEQVRYheWXzRGEIAyFn8OBIyVQCqVJaZZiCR49OJvNDyrOrg2EHGTCx8WY9wzAa8xksQKTLLHlH39ksRdeE6coazw0jx5Jlq35qsEhyzYmSfzptTruiXz6YcmphR2gBf9U4oSc/pb2SVV/+9sw5I7YJ4/wQawGsmgf5D1Ib0hT+CRUs8hZft+Bk77jByAoRIduReo6nqvjjbC/yRay9gGHOvlghJ/BZhegVaciOSRX2OxCqnp6OLl70lRPOr/xHx3BDsAfWbQCs6keNruUxw3MDclkM7lNaXIJqXZ4TNJm8lq2EYj423CkaeGcye0G5pH0/sZEz/06n2vyGl+afuLpQXhsfAAAAABJRU5ErkJggg=="; // Đây là dữ liệu hình ảnh base64 thực tế
 
 app.get("/image.png", (req, res) => {
-  // res.set("Content-Type", "image/png");
+  res.set("Content-Type", "image/jpeg");
   res.send(
     `<img src="https://s3-north1.viettelidc.com.vn/fmp-dev/QRCode/xnqRDwuqIOqVEs33j8huc/QR.jpeg" alt="Base64 Image">`
   );
