@@ -1,7 +1,6 @@
 import taskSendInvitationModel from "../models/taskSendInvitation.model.js";
 import usersJoinModel from "../models/users.join.model.js";
 import nodemailer from "nodemailer";
-import qr from "qrcode";
 import { templateEmail } from "../template/templateEmail.js";
 const user = process.env.GMAIL_USER;
 const password = process.env.GMAIL_PASSWORD;
@@ -42,7 +41,7 @@ export const checkSendEmail = async () => {
       })
       .catch((error) => {
         console.error("Some tasks failed");
-        // console.error(error);
+        console.error(error);
       });
   } catch (error) {}
 };
@@ -80,7 +79,8 @@ export async function sendEmail(id) {
         });
     });
   } catch (error) {
-    new Error(err);
+    console.log(error);
+    new Error(error);
   }
 }
 
