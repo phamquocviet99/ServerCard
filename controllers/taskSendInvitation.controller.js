@@ -67,6 +67,7 @@ export async function sendEmail(id) {
         .sendMail(message)
         .catch((error) => {
           reject(new Error(error));
+          console.error(error);
           update(userData._id, {
             isErrorEmail: true,
           });
@@ -91,5 +92,8 @@ export const update = async (id, data) => {
     .then((result) => {
       console.log(result);
     })
-    .catch((err) => new Error(err));
+    .catch((err) => {
+      console.error(error);
+      new Error(err);
+    });
 };
