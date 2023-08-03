@@ -1,5 +1,4 @@
 import express from "express";
-import request from "request";
 import bodyParser from "body-parser";
 import cors from "cors";
 import mongoose from "mongoose";
@@ -7,7 +6,9 @@ import dotenv from "dotenv";
 import userRoutes from "./routes/users.routes.js";
 import vCardRoutes from "./routes/vCard.routes.js";
 import usersJoinRoutes from "./routes/users.join.routes.js";
+import genQRcodeRoutes from "./routes/genQRcode.routes.js";
 import multer from "multer";
+import qr from "qrcode";
 import { checkSendEmail } from "./controllers/taskSendInvitation.controller.js";
 
 const app = express();
@@ -26,7 +27,7 @@ app.use(
 app.use("/auth", userRoutes);
 app.use("/v-card", vCardRoutes);
 app.use("/event", usersJoinRoutes);
-
+app.use("/images", genQRcodeRoutes);
 app.get("/test", checkSendEmail);
 
 // app.use("/images", express.static("uploads"));
@@ -35,29 +36,21 @@ const base64Image =
   "iVBORw0KGgoAAAANSUhEUgAAAMgAAADIAQMAAACXljzdAAAABlBMVEX///8AAABVwtN+AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAA/UlEQVRYheWXzRGEIAyFn8OBIyVQCqVJaZZiCR49OJvNDyrOrg2EHGTCx8WY9wzAa8xksQKTLLHlH39ksRdeE6coazw0jx5Jlq35qsEhyzYmSfzptTruiXz6YcmphR2gBf9U4oSc/pb2SVV/+9sw5I7YJ4/wQawGsmgf5D1Ib0hT+CRUs8hZft+Bk77jByAoRIduReo6nqvjjbC/yRay9gGHOvlghJ/BZhegVaciOSRX2OxCqnp6OLl70lRPOr/xHx3BDsAfWbQCs6keNruUxw3MDclkM7lNaXIJqXZ4TNJm8lq2EYj423CkaeGcye0G5pH0/sZEz/06n2vyGl+afuLpQXhsfAAAAABJRU5ErkJggg=="; // Đây là dữ liệu hình ảnh base64 thực tế
 
 app.get("/image.png", async (req, res) => {
-  res.status(200);
-  res.set("Content-Type", "image/jpeg");
-  const da = Buffer.from(base64Image, "base64");
-  res.send(da);
-});
-
-app.get("/images.png", async (req, res) => {
-  const url =
-    "https://s3-north1.viettelidc.com.vn/fmp-dev/QRCode/IJQkb6KhtwRFBAvUDUs9e/QR.jpeg";
-
-  request(
-    {
-      url: url,
-      encoding: null,
-    },
-    (err, resp, buffer) => {
-      if (!err && resp.statusCode === 200) {
-        console.log(resp.body);
-        res.set("Content-Type", "image/jpeg");
-        res.send(resp.body);
-      }
-    }
-  );
+  await qr
+    .toDataURL("2ieh2ohdeuhdedhue")
+    .then((data) => {
+      res.status(200);
+      res.set("Content-Type", "image/jpeg");
+      const da = Buffer.from(base64Image, "base64");
+      res.send(da);
+    })
+    .catch((err) => {
+      res.status(500).send({ success: false });
+    });
+  // res.status(200);
+  // res.set("Content-Type", "image/jpeg");
+  // const da = Buffer.from(base64Image, "base64");
+  // res.send(da);
 });
 
 app.use((error, req, res, next) => {

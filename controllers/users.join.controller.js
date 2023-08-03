@@ -40,15 +40,15 @@ export const register = async (req, res, next) => {
     }
   }
 
-  await getUrlQRCode(id)
-    .then((url) => (urlQRCode = url))
-    .catch((error) => {
-      return res.status(500).send({
-        success: false,
-        code: -1,
-        message: "Có lỗi trong quá trình tạo QR",
-      });
-    });
+  // await getUrlQRCode(id)
+  //   .then((url) => (urlQRCode = url))
+  //   .catch((error) => {
+  //     return res.status(500).send({
+  //       success: false,
+  //       code: -1,
+  //       message: "Có lỗi trong quá trình tạo QR",
+  //     });
+  //   });
 
   // const data = {
   //   id: id,
@@ -82,7 +82,7 @@ export const register = async (req, res, next) => {
   // console.timeEnd(`TIME-PROCESS`);
 
   req.body.urlInvitation = "urlInvitationResult";
-  req.body.urlQRcode = urlQRCode;
+  req.body.urlQRcode = "urlQRCode";
   const user = new userModel(req.body);
   user
     .save()
@@ -338,7 +338,7 @@ export const updateCheckin = async (req, res) => {
   }
 };
 
-function getUrlQRCode(id) {
+export function getUrlQRCode(id) {
   return new Promise(function (resolve, reject) {
     qr.toDataURL(id)
       .then(async (result) => {
@@ -417,5 +417,3 @@ function getUrlInvitation(data) {
 
 //   await browser.close();
 // }
-
-
