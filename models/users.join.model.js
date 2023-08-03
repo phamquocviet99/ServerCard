@@ -27,7 +27,7 @@ const schema = new mongoose.Schema(
     },
     urlInvitation: {
       type: String,
-      require: true,
+      // require: true,
     },
     isCheckIn: {
       type: Boolean,
