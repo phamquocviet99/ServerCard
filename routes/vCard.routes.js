@@ -5,7 +5,8 @@ import {
   getById,
   update,
   remove,
-  postAdmin
+  postAdmin,
+  updateAdmin,
 } from "../controllers/vCard.controller.js";
 import checkAuth from "../middleware/check-auth.js";
 import upload from "../middleware/multer.js";
@@ -17,6 +18,7 @@ router.post("/join", upload.single("logo"), postAdmin);
 router.get("/", checkAuth, get);
 router.get("/:id", getById);
 router.put("/:id", checkAuth, upload.single("logo"), update);
+router.put("/join/:id", upload.single("logo"), updateAdmin);
 router.delete("/:id", checkAuth, remove);
 
 export default router;

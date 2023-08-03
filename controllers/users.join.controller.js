@@ -86,15 +86,18 @@ export const register = async (req, res, next) => {
   user
     .save()
     .then(async (result) => {
-      return res.status(200).json({
+      res.status(200).json({
         success: true,
         code: 0,
         message: "Đăng kí tham gia thành công !",
         data: result,
       });
+      // setTimeout(() => {
+      //   console.log("qqqqqqqqqqqqqqqqqqq");
+      // }, 10000);
     })
     .catch((err) => {
-      return res.status(500).json({
+      res.status(500).json({
         error: err,
         success: false,
         code: 500,
