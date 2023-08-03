@@ -25,7 +25,7 @@ const schema = new mongoose.Schema(
       type: String,
       require: true,
     },
-    urlInvitation: {
+    position: {
       type: String,
       // require: true,
     },

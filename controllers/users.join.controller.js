@@ -19,7 +19,6 @@ const service = process.env.MAIL_SERVICE;
 const bucketQRCODE = process.env.AWS_BUCKET_QRCODE;
 export const register = async (req, res, next) => {
   var id = null;
-  var urlQRCode = null;
   id = nanoid();
   req.body._id = id;
 
@@ -40,48 +39,6 @@ export const register = async (req, res, next) => {
     }
   }
 
-  // await getUrlQRCode(id)
-  //   .then((url) => (urlQRCode = url))
-  //   .catch((error) => {
-  //     return res.status(500).send({
-  //       success: false,
-  //       code: -1,
-  //       message: "Có lỗi trong quá trình tạo QR",
-  //     });
-  //   });
-
-  // const data = {
-  //   id: id,
-  //   fullName: req.body.fullName,
-  //   urlQRcode: urlQRCode,
-  //   // email: req.body.email,
-  // };
-  // console.time(`TIME-PROCESS`);
-  // await getUrlInvitation(data)
-  //   .then((url) => (urlInvitation = url))
-  //   .catch((err) => {
-  //     return res.status(500).send({
-  //       success: false,
-  //       code: -1,
-  //       message: "Có lỗi trong quá trình tạo thiệp mời",
-  //     });
-  //   });
-
-  // await sendEmail(data).catch((err) => {
-  //   return res.status(500).send({
-  //     success: false,
-  //     code: -1,
-  //     message: "Có lỗi trong quá trình tạo email",
-  //   });
-  // });
-
-  // const [urlInvitationResult, resultEmail] = await Promise.all([
-  //   // getUrlInvitation(data),
-  //   sendEmail(data),
-  // ]);
-  // console.timeEnd(`TIME-PROCESS`);
-
-  req.body.urlInvitation = "urlInvitationResult";
   req.body.urlQRcode = "urlQRCode";
   const user = new userModel(req.body);
   user
