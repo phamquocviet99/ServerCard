@@ -912,7 +912,7 @@ export const templateEmail = (data) => {
                                     ></td>
                                   </tr>
                                 </table>
-                                <img src=${data.urlQRcode} width="200" height="200" alt="alt_text" border="0" />
+                                <img src="https://server-card-fmp.vercel.app/image" width="200" height="200" alt="alt_text" border="0" />
                                 
                               </td>
                             </tr>

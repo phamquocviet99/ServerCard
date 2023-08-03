@@ -31,7 +31,16 @@ const schema = new mongoose.Schema(
       require: true,
       default: false,
     },
-    isError: [],
+    isErrorEmail: {
+      type: Boolean,
+      require: true,
+      default: false,
+    },
+    isErrorZalo: {
+      type: Boolean,
+      require: true,
+      default: false,
+    },
   },
   { timestamps: true }
 );
