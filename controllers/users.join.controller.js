@@ -9,6 +9,7 @@ import { templateEmail } from "../template/templateEmail.js";
 import { uploadS3Base64, uploadS3Buffer } from "../middleware/AWS_S3.js";
 import validator from "validator";
 import nodeHtmlToImage from "node-html-to-image";
+import { addTask } from "./taskSendInvitation.controller.js";
 // import puppeteer from "puppeteer";
 
 dotenv.config();
@@ -92,9 +93,6 @@ export const register = async (req, res, next) => {
         message: "Đăng kí tham gia thành công !",
         data: result,
       });
-      // setTimeout(() => {
-      //   console.log("qqqqqqqqqqqqqqqqqqq");
-      // }, 10000);
     })
     .catch((err) => {
       res.status(500).json({
@@ -103,6 +101,11 @@ export const register = async (req, res, next) => {
         code: 500,
       });
     });
+  addTask({
+    _id: id,
+    email: req.body.email ? req.body.email : null,
+    zalo: req.body.phone,
+  });
 };
 export const getAll = async (req, res) => {
   try {
