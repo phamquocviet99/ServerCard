@@ -30,7 +30,7 @@ app.use("/event", usersJoinRoutes);
 app.use("/images", genQRcodeRoutes);
 app.get("/test", checkSendEmail);
 
-schedule.scheduleJob("*/3600 * * * * *", function () {
+schedule.scheduleJob("*/1 * * * *", function () {
   checkSendEmail();
 });
 

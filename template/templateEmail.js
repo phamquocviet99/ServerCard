@@ -1,4 +1,5 @@
 export const templateEmail = (data) => {
+  const domain = process.env.DOMAIN_SERVER;
   return `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
   <html
     xmlns="http://www.w3.org/1999/xhtml"
@@ -912,7 +913,7 @@ export const templateEmail = (data) => {
                                     ></td>
                                   </tr>
                                 </table>
-                                <img src="https://server-card-fmp.vercel.app/images/${data._id}/QRcode.png" width="200" height="200" alt="alt_text" border="0" />
+                                <img src="${domain}/images/${data._id}/QRcode.png" width="200" height="200" alt="alt_text" border="0" />
                                 
                               </td>
                             </tr>
