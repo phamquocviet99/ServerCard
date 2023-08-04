@@ -22,7 +22,7 @@ export const register = async (req, res, next) => {
   id = nanoid();
   req.body._id = id;
 
-  if (!req.body.fullName || !req.body.phone) {
+  if (!req.body.fullName || !req.body.phone || !req.body.gender) {
     return res.status(400).send({
       success: false,
       code: -1,
