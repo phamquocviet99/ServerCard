@@ -6,10 +6,11 @@ const schema = new mongoose.Schema(
       type: String,
       require: true,
     },
-    email: {
+    fullName: {
       type: String,
+      require: true,
     },
-    address: {
+    gender: {
       type: String,
       require: true,
     },
@@ -17,26 +18,23 @@ const schema = new mongoose.Schema(
       type: String,
       require: true,
     },
-    fullName: {
+    email: {
+      type: String,
+    },
+    unit: {
       type: String,
       require: true,
     },
-    companyName: {
+    unitAddress: {
       type: String,
     },
-    gender: {
+    role: {
       type: String,
       require: true,
-      default: "male",
     },
-    position: {
+    pack: {
       type: String,
-      // require: true,
-    },
-    isCheckIn: {
-      type: Boolean,
       require: true,
-      default: false,
     },
   },
   { timestamps: true }
@@ -48,4 +46,4 @@ schema.set("toJSON", {
     delete ret._id;
   },
 });
-export default mongoose.model("usersEvent", schema);
+export default mongoose.model("sponsors", schema);

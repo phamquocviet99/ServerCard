@@ -2,7 +2,10 @@ import taskSendInvitationModel from "../models/taskSendInvitation.model.js";
 import usersJoinModel from "../models/users.join.model.js";
 import nodemailer from "nodemailer";
 import { templateEmail } from "../template/templateEmail.js";
+import axiosClient from "../api/axiosClient.js";
+import { genBase64ImageInvitation } from "./genQRcode.controller.js";
 const user = process.env.GMAIL_USER;
+const keyZalo = process.env.API_ZALO_KEY;
 const password = process.env.GMAIL_PASSWORD;
 const service = process.env.MAIL_SERVICE;
 export const addTask = async (data) => {
@@ -46,6 +49,28 @@ export const checkSendEmail = async () => {
   } catch (error) {}
 };
 
+export const checkSendZalo = async () => {
+  try {
+    var taskSend = [];
+    const listZaloNotSend = await taskSendInvitationModel.find({
+      isSentZalo: false,
+      isErrorZalo: false,
+    });
+    for (let i = 0; i < listZaloNotSend.length; i++) {
+      taskSend.push(sendZalo(listZaloNotSend[i]._id));
+    }
+    console.log(listZaloNotSend.length);
+    Promise.all(taskSend)
+      .then((results) => {
+        console.log("All tasks send zalo successfully");
+      })
+      .catch((error) => {
+        console.error("Some tasks zalo failed");
+        console.error(error);
+      });
+  } catch (error) {}
+};
+
 export async function sendEmail(id) {
   try {
     const transporter = nodemailer.createTransport({
@@ -57,7 +82,7 @@ export async function sendEmail(id) {
     });
     const userData = await usersJoinModel.findById({ _id: id });
     let message = {
-      from: user,
+      from: { name: "Công Ty Cổ Phần FLOWER MARKET PLACE FMP", address: user },
       to: userData.email,
       subject: "Thư mời tham gia lễ ra mắt Sàn Hoa FMP",
       html: templateEmail(userData),
@@ -85,6 +110,122 @@ export async function sendEmail(id) {
   }
 }
 
+export async function sendZalo(id) {
+  try {
+    var dataImage = null;
+    const userData = await usersJoinModel.findById({
+      _id: id,
+    });
+
+    await genBase64ImageInvitation(userData).then((base64) => {
+      dataImage = base64.replace(/^data:image\/\w+;base64,/, "");
+    });
+    let listMessage = [
+      {
+        type: "text",
+        data: {
+          phone: userData.phone,
+          apiKey: keyZalo,
+          message: `Cảm ơn quý ${userData.gender === "male" ? "Ông" : "Bà"} ${
+            userData.fullName
+          } đã đăng kí tham gia sự kiện ra mắt Sàn Hoa FLOWER MARKET PLACE FMP.`,
+        },
+      },
+      {
+        type: "text",
+        data: {
+          phone: userData.phone,
+          apiKey: keyZalo,
+          message: `Công Ty Cổ Phần FLOWER MARKET PLACE FMP xin chân thành cảm ơn sự hiện diện của quý ${
+            userData.gender === "male" ? "ông" : "bà"
+          }.`,
+        },
+      },
+      {
+        type: "text",
+        data: {
+          phone: userData.phone,
+          apiKey: keyZalo,
+          message: `Đây là thư mời của Công Ty dành cho quý  ${
+            userData.gender === "male" ? "ông" : "bà"
+          }.`,
+        },
+      },
+      {
+        type: "photo",
+        data: {
+          phone: userData.phone,
+          apiKey: keyZalo,
+          message: ``,
+          imgBase64: dataImage,
+        },
+      },
+    ];
+    return new Promise(async function (resolve, reject) {
+      if (!userData.phone) resolve();
+      try {
+        for (var mess of listMessage) {
+          if (mess.type === "text") {
+            await sendTextZalo(mess.data).catch(() => reject(false));
+          } else {
+            console.log("fff");
+            await sendPhotoZalo(mess.data).catch(() => reject(false));
+          }
+        }
+        await update(userData._id, {
+          isSentZalo: true,
+        });
+      } catch (error) {
+        update(userData._id, {
+          isErrorZalo: true,
+        });
+      }
+    });
+  } catch (error) {
+    console.log(error);
+    // new Error(error);
+    return false;
+  }
+}
+
+export function sendTextZalo(data) {
+  try {
+    return new Promise(async function (resolve, reject) {
+      await axiosClient
+        .post("/zalo/send-text", JSON.stringify(data))
+        .then((result) => {
+          resolve(true);
+        })
+        .catch((error) => {
+          console.log("Lỗi gửi zalo" + error);
+          reject(console.log("Lỗi gửi zalo" + error));
+        });
+    });
+  } catch (error) {
+    console.log("Lỗi gửi zalo" + error);
+    return console.log("Lỗi gửi zalo" + error);
+  }
+}
+export function sendPhotoZalo(data) {
+  try {
+    return new Promise(async function (resolve, reject) {
+      await axiosClient
+        .post("/zalo/send-photo", JSON.stringify(data))
+        .then((result) => {
+          console.log(result);
+          resolve(true);
+        })
+        .catch((error) => {
+          console.log("Lỗi gửi zalo" + error);
+          reject(false);
+        });
+    });
+  } catch (error) {
+    console.log("Lỗi gửi zalo" + error);
+    return new Error(error);
+  }
+}
+
 export const update = async (id, data) => {
   if (!id) return;
   await taskSendInvitationModel
@@ -94,6 +235,6 @@ export const update = async (id, data) => {
     })
     .catch((err) => {
       console.error(error);
-      new Error(err);
+      // new Error(err);
     });
 };
