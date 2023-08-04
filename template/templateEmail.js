@@ -2,603 +2,1244 @@ import dotenv from "dotenv";
 export const templateEmail = (data) => {
   dotenv.config();
   const domain = process.env.DOMAIN_SERVER;
+
   return `<!DOCTYPE html>
-<html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- <script src="https://cdn.tailwindcss.com"></script> -->
-  <title>Document</title>
-  <style>
-    .container {
-      padding: 1.25rem;
-      width: 100vw;
-      min-height: 100vh;
-      background-image: linear-gradient(to right, var(--tw-gradient-stops));
-      background-color: #1d4ed8;
-    }
-
-    .wrapper {
-      display: grid;
-      grid-template-columns: repeat(1, minmax(0, 1fr));
-
-      width: 100%;
-      min-height: 100%;
-      background-color: #ffffff;
-
-      @media (min-width: 768px) {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-
-    .left-page {
-      padding-bottom: 2.5rem;
-      border-right-width: 2px;
-      border-right: 2px solid #1e40af;
-    }
-
-    .top-left-page {
-      display: flex;
-      margin: 0.5rem;
-      justify-content: space-between;
-    }
-
-    .h-20 {
-      height: 5rem;
-    }
-
-    .title-top {
-      font-size: 2.25rem;
-      /* Equivalent to text-4xl */
-      text-align: right;
-      color: transparent;
-      background-clip: text;
-      background-image: linear-gradient(to left, #1e40af, #1e90ff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      font-weight: 600;
-      /* Equivalent to font-semibold */
-    }
-
-    .title-desc {
-      font-size: 0.75rem;
-      /* Equivalent to text-xs */
-      text-align: right;
-      color: transparent;
-      background-clip: text;
-      background-image: linear-gradient(to left, #1e40af, #1e90ff);
-
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      font-weight: 600;
-    }
-
-    .company-name {
-      font-size: 0.75rem;
-      /* Equivalent to text-xs */
-      text-align: right;
-      color: transparent;
-      background-clip: text;
-      background-image: linear-gradient(to left, #1e40af, #1e90ff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      font-weight: 300;
-      /* Equivalent to font-light */
-    }
-
-    .text-center {
-      text-align: center;
-    }
-
-    .mt-1 {
-      margin-top: 0.25rem;
-    }
-
-    .title {
-      
-      font-size: 1.5rem;
-      line-height: 2rem;
-      font-weight: 600;
-      color: #1e40af;
-    }
-
-    .small-title {
-      margin-top: 0.75rem;
-      
-      font-size: 1.5rem;
-      line-height: 2rem;
-      font-weight: 300;
-      color: #1e40af;
-    }
-
-    .dot-orange {
-      font-size: 1.5rem;
-      /* Equivalent to text-2xl */
-      margin-top: 0.5rem;
-      margin-bottom: 0.5rem;
-      color: #ffa500;
-      line-height: 2rem;
-    }
-
-    .dot-blue {
-      font-size: 1.5rem;
-      /* Equivalent to text-2xl */
-      padding-bottom: 1.25rem;
-      /* Equivalent to pb-5 */
-      color: #1e40af;
-    }
-
-    /* Custom CSS classes */
-    .text-custom-lg {
-      margin-top: 0.5rem;
-      font-size: 1.125rem;
-      line-height: 1.75rem;
-      font-weight: 300;
-      color: #1e40af;
-    }
-
-    .text-custom-2xl {
-      margin-top: 0.75rem;
-      font-size: 2rem;
-      line-height: 2rem;
-      font-weight: 600;
-    }
-
-    .text-custom-orange {
-      font-weight: 600;
-      /* Equivalent to font-semibold */
-      font-family: serif;
-      /* Equivalent to font-serif */
-      margin-top: 1.5rem;
-      /* Equivalent to mt-3 */
-    }
-
-    .text-custom-base {
-      font-size: 1.5rem;
-      /* Equivalent to text-base */
-      color: #1e40af;
-      /* Equivalent to text-blue-800 */
-      font-weight: 100;
-      /* Equivalent to font-thin */
-      font-family: serif;
-      /* Equivalent to font-serif */
-      margin-top: 1.5rem;
-      /* Equivalent to mt-3 */
-    }
-
-    .text-yellow-4 {
-      color: #ffd700;
-      /* Equivalent to text-yellow-400 */
-    }
-
-    .text-orange-5 {
-      color: #ffa500;
-      /* Equivalent to text-orange-500 */
-    }
-
-    .qr-container {
-      display: flex;
-      margin-top: 0.75rem;
-      margin-bottom: 0.75rem;
-      justify-content: center;
-    }
-
-    .qr-wrapper {
-      width: 13rem;
-      height: 13rem;
-    }
-
-    .qr-code {
-      object-fit: cover;
-      width: 100%;
-      height: 100%;
-    }
-
-    .text-custom-lg-bottom {
-      font-size: 1.125rem;
-      /* Equivalent to text-lg */
-      color: #1e40af;
-      /* Equivalent to text-blue-800 */
-      font-weight: 600;
-      /* Equivalent to font-semibold */
-      font-family: serif;
-      /* Equivalent to font-serif */
-      margin-top: 1rem;
-      /* Equivalent to my-3 */
-      margin-bottom: 1rem;
-      /* Equivalent to my-3 */
-    }
-
-    .grid-sponsor {
-      /* Custom CSS class */
-
-      display: grid;
-      grid-template-columns: repeat(7,
-          minmax(0, 1fr));
-      /* Equivalent to grid-cols-7 */
-      gap: 0.5rem;
-      /* Equivalent to gap-2 */
-      font-size: 0.875rem;
-      /* Equivalent to text-sm */
-      color: #1e40af;
-      /* Equivalent to text-blue-800 */
-      font-weight: 500;
-      padding-left: 1rem;
-      padding-right: 1rem;
-      /* Equivalent to font-medium */
-    }
-
-    .benefit {
-      padding-top: 0.5rem;
-      padding-bottom: 0.5rem;
-      grid-column: span 3 / span 3;
-
-      border: 2px solid #1e40af;
-    }
-
-    .typo {
-      padding-top: 0.5rem;
-      padding-bottom: 0.5rem;
-
-      border: 2px solid #1e40af;
-    }
-
-    .x-mark {
-      font-size: 1.5rem;
-      line-height: 2rem;
-      font-weight: 300;
-    }
-
-    .benefit-col {
-      display: flex;
-      grid-column: span 3 / span 3;
-      justify-content: center;
-      align-items: center;
-      font-size: 0.75rem;
-      line-height: 1rem;
-      font-style: italic;
-    }
-
-    .right-page {
-      position: relative;
-      padding-left: 0.75rem;
-      padding-right: 0.75rem;
-    }
-
-    .title-right {
-      padding-top: 0.75rem;
-      padding-bottom: 0.75rem;
-      
-      font-size: 1.875rem;
-      line-height: 2.25rem;
-      font-weight: 600;
-      text-align: center;
-      color: #1e40af;
-    }
-
-    .part {
-      
-      font-weight: 600;
-      color: #1e40af;
-    }
-
-    .text-right {
-      text-align: right;
-    }
-
-    .flex-col-items-center {
-      padding-top: 50px;
-      padding-top: 50px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    /* Additional class for z-index and margin-top */
-    .mt-negative-10 {
-      margin-top: -10px;
-      z-index: -10;
-    }
-
-    .figure-logo {
-      position: absolute;
-      opacity: 0.3;
-      height: 500px;
-    }
-
-    .z-20 {
-      z-index: 20;
-    }
-
-    .text-lg {
-      font-size: 1.125rem;
-      line-height: 1.75rem;
-    }
-
-    .time {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .month {
-      font-size: 1.25rem;
-      line-height: 1.75rem;
-      text-align: center;
-      color: #1e40af;
-    }
-
-    .time-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .date {
-      padding-top: 0.25rem;
-      padding-bottom: 0.25rem;
-      padding-left: 1.25rem;
-      padding-right: 1.25rem;
-      border-top: 2px solid #1e40af;
-      border-bottom: 2px solid #1e40af;
-      font-size: 1.25rem;
-      line-height: 1.75rem;
-      color: #1e40af;
-    }
-
-    .day {
-      font-size: 3rem;
-      line-height: 1;
-      text-align: center;
-      color: #1e40af;
-    }
-
-    .year {
-      margin-top: 0.5rem;
-      margin-bottom: 0.5rem;
-      font-size: 1.25rem;
-      line-height: 1.75rem;
-      text-align: center;
-      color: #1e40af;
-    }
-
-    .flex-box-sign {
-      display: flex;
-      z-index: 20;
-      justify-content: space-between;
-    }
-
-    .date-time {
-      font-weight: 600;
-      text-align: center;
-      color: #1e40af;
-    }
-
-    .italic {
-      font-style: italic;
-    }
-
-    .signature {
-      display: flex;
-      justify-content: flex-end;
-      height: 8rem;
-    }
-
-    .h-full {
-      height: 100%;
-    }
-
-    .grid-sponsor-logo {
-      display: grid;
-      margin-top: 2.5rem;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 0.5rem;
-      vertical-align: middle;
-    }
-
-    .flex-box {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .contact {
-      position: absolute;
-      bottom: 0.5rem;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-        Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
-        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
-        "Noto Color Emoji";
-      font-weight: 300;
-    }
-  </style>
-</head>
-
-<body>
-  <div class="container">
-    <div class="wrapper">
-      <div class="left-page">
-        <div class="top-left-page">
-          <img src="https://s3-north1.viettelidc.com.vn/fmp-dev/landingpage-event/fmp.png" alt="" class="h-20" />
-          <div class="">
-            <div class="title-top">sanhoa.vn</div>
-            <div class="title-desc">Lướt nhẹ mua nhanh</div>
-            <div class="company-name">
-              CÔNG TY CỔ PHẦN FLOWERMARKETPLACE - FMP
-            </div>
-          </div>
-        </div>
-        <div class="text-center mt-1">
-          <p class="title">TRÂN TRỌNG KÍNH MỜI</p>
-          <p class="small-title">DOANH NHÂN</p>
-          <div class="dot-orange">
-            Ông/Bà
-          </div>
-          <div class="dot-blue">
-            ${data.fullName}
-          </div>
-          <div class="text-custom-lg">đến tham dự</div>
-          <p class="text-custom-2xl text-yellow-4">LỄ RA MẮT SÀN FMP</p>
-          <p class="text-custom-2xl text-orange-5">
-            Sàn giao dịch số hoa đầu tiên tại Việt Nam
-          </p>
-          <p class="text-custom-base">
-            &quot; FMP NỞ HOA - NUÔI DƯỠNG CỘNG ĐỒNG &quot;
-          </p>
-          <div class="qr-container">
-            <figure class="qr-wrapper">
+  <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+      <title>Document</title>
+      <style>
+        .container {
+          padding: 1.25rem;
+          width: 60rem;
+          max-height: 90rem;
+          background-image: linear-gradient(to right, var(--tw-gradient-stops));
+          background-color: #1d4ed8;
+        }
+  
+        .wrapper {
+          display: flex;
+          width: 100%;
+          min-height: 100%;
+          background-color: #ffffff;
+        }
+  
+        .left-page {
+          padding-bottom: 2.5rem;
+          flex: 1 1 0%;
+          border-right-width: 2px;
+          border-right: 2px solid #1e40af;
+        }
+  
+        .top-left-page {
+          display: flex;
+          margin: 0.5rem;
+          justify-content: space-between;
+        }
+  
+        .h-20 {
+          height: 3rem;
+        }
+  
+        .title-top {
+          font-size: 1.25rem;
+          /* Equivalent to text-4xl */
+          text-align: right;
+          color: transparent;
+          background-clip: text;
+          background-image: linear-gradient(to left, #1e40af, #1e90ff);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          font-weight: 600;
+          /* Equivalent to font-semibold */
+        }
+  
+        .title-desc {
+          font-size: 0.75rem;
+          /* Equivalent to text-xs */
+          text-align: right;
+          color: transparent;
+          background-clip: text;
+          background-image: linear-gradient(to left, #1e40af, #1e90ff);
+  
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          font-weight: 600;
+        }
+  
+        .company-name {
+          font-size: 0.5rem;
+          /* Equivalent to text-xs */
+          text-align: right;
+          color: transparent;
+          background-clip: text;
+          background-image: linear-gradient(to left, #1e40af, #1e90ff);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          font-weight: 300;
+          /* Equivalent to font-light */
+        }
+  
+        .text-center {
+          text-align: center;
+        }
+  
+        .mt-1 {
+          margin-top: 0.25rem;
+        }
+  
+        .title {
+          font-size: 1rem;
+          line-height: 2rem;
+          font-weight: 600;
+          color: #1e40af;
+        }
+  
+        .small-title {
+          margin-top: 0.75rem;
+  
+          font-size: 1rem;
+          line-height: 2rem;
+          font-weight: 300;
+          color: #1e40af;
+        }
+  
+        .dot-orange {
+          font-size: 1.5rem;
+          /* Equivalent to text-2xl */
+          margin-top: 0.5rem;
+          margin-bottom: 0.5rem;
+          line-height: 2rem;
+          font-style: italic;
+          padding-left: 1.25rem;
+          padding-right: 1.25rem;
+  
+        }
+  
+        .dot-blue {
+          font-size: 1.2rem;
+          /* Equivalent to text-2xl */
+          padding-bottom: 1.25rem;
+          padding-left: 1.25rem;
+          padding-right: 1.25rem;
+  
+          /* Equivalent to pb-5 */
+        }
+  
+        /* Custom CSS classes */
+        .text-custom-lg {
+          margin-top: 0.5rem;
+          font-size: 1rem;
+          line-height: 1.75rem;
+          font-weight: 300;
+          color: #1e40af;
+        }
+  
+        .text-custom-2xl {
+  
+          font-size: 1.25rem;
+          line-height: 2rem;
+          font-weight: 600;
+        }
+  
+        .text-custom-orange {
+          font-weight: 600;
+          /* Equivalent to font-semibold */
+          font-family: serif;
+          /* Equivalent to font-serif */
+  
+          /* Equivalent to mt-3 */
+        }
+  
+        .text-custom-base {
+          font-size: 0.75rem;
+          /* Equivalent to text-base */
+          color: #1e40af;
+          /* Equivalent to text-blue-800 */
+          font-weight: 100;
+          /* Equivalent to font-thin */
+          font-family: serif;
+          /* Equivalent to font-serif */
+          margin-top: 1.5rem;
+          /* Equivalent to mt-3 */
+        }
+  
+        .text-yellow-4 {
+          color: #ffd700;
+          /* Equivalent to text-yellow-400 */
+        }
+  
+        .text-orange-5 {
+          color: #ffa500;
+          /* Equivalent to text-orange-500 */
+        }
+  
+        .qr-container {
+          display: flex;
+          margin-top: 0.75rem;
+          margin-bottom: 0.75rem;
+          justify-content: center;
+        }
+  
+        .qr-wrapper {
+          width: 8rem;
+          height: 8rem;
+        }
+  
+        .qr-code {
+          object-fit: cover;
+          width: 100%;
+          height: 100%;
+        }
+  
+        .text-custom-lg-bottom {
+          font-size: 1rem;
+          /* Equivalent to text-lg */
+          color: #1e40af;
+          /* Equivalent to text-blue-800 */
+          font-weight: 600;
+          /* Equivalent to font-semibold */
+          font-family: serif;
+          /* Equivalent to font-serif */
+          margin-top: 1rem;
+          /* Equivalent to my-3 */
+          margin-bottom: 1rem;
+          /* Equivalent to my-3 */
+        }
+  
+        .grid-sponsor {
+          /* Custom CSS class */
+  
+          display: grid;
+          grid-template-columns: repeat(7, minmax(0, 1fr));
+          /* Equivalent to grid-cols-7 */
+          gap: 0.5rem;
+          /* Equivalent to gap-2 */
+          font-size: 0.5rem;
+          /* Equivalent to text-sm */
+          color: #1e40af;
+          /* Equivalent to text-blue-800 */
+          font-weight: 500;
+          padding-left: 1rem;
+          padding-right: 1rem;
+          /* Equivalent to font-medium */
+        }
+  
+        .benefit {
+          padding-top: 0.5rem;
+          padding-bottom: 0.5rem;
+          grid-column: span 3 / span 3;
+          border: 1.5px solid #1e40af;
+        }
+  
+        .typo {
+          padding-top: 0.5rem;
+          padding-bottom: 0.5rem;
+  
+          border: 1.5px solid #1e40af;
+        }
+  
+        .x-mark {
+          font-size: 1rem;
+          line-height: 2rem;
+          font-weight: 300;
+        }
+  
+        .benefit-col {
+          display: flex;
+          grid-column: span 3 / span 3;
+          justify-content: center;
+          align-items: center;
+          font-size: 0.6rem;
+          line-height: 1rem;
+          font-style: italic;
+        }
+  
+        .right-page {
+          position: relative;
+          padding-left: 0.75rem;
+          padding-right: 0.75rem;
+          flex: 1 1 0%;
+        }
+  
+        .title-right {
+          padding-top: 0.75rem;
+          padding-bottom: 0.75rem;
+          font-size: 1rem;
+          line-height: 2.25rem;
+          font-weight: 600;
+          text-align: center;
+          color: #1e40af;
+        }
+  
+        .part {
+          font-weight: 600;
+          font-size: 0.75rem;
+  
+          color: #1e40af;
+        }
+  
+        .text-right {
+          text-align: right;
+        }
+  
+        .flex-col-items-center {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+  
+        /* Additional class for z-index and margin-top */
+        .mt-negative-10 {
+          z-index: -10;
+        }
+  
+        .figure-logo {
+          position: absolute;
+          opacity: 0.3;
+          height: 400px;
+        }
+  
+        .z-20 {
+          z-index: 20;
+        }
+  
+        .text-lg {
+          font-size: 1.125rem;
+          line-height: 1.75rem;
+        }
+  
+        .time {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+  
+        .month {
+          font-size: 1rem;
+          line-height: 1.75rem;
+          text-align: center;
+          color: #1e40af;
+        }
+  
+        .time-grid {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+  
+        .date {
+          padding-top: 0.25rem;
+          padding-bottom: 0.25rem;
+          padding-left: 1.25rem;
+          padding-right: 1.25rem;
+          border-top: 2px solid #1e40af;
+          border-bottom: 2px solid #1e40af;
+          font-size: 1rem;
+          line-height: 1.75rem;
+          color: #1e40af;
+        }
+  
+        .day {
+          font-size: 2rem;
+          line-height: 1;
+          text-align: center;
+          color: #1e40af;
+        }
+  
+        .year {
+          margin-top: 0.5rem;
+          margin-bottom: 0.5rem;
+          font-size: 1.125rem;
+          line-height: 1.75rem;
+          text-align: center;
+          color: #1e40af;
+        }
+  
+        .flex-box-sign {
+          display: flex;
+          z-index: 20;
+          justify-content: space-between;
+        }
+  
+        .date-time {
+          font-weight: 600;
+          text-align: center;
+          color: #1e40af;
+          font-size: 1rem;
+  
+        }
+  
+        .italic {
+          font-style: italic;
+        }
+  
+        .signature {
+          display: flex;
+          justify-content: flex-end;
+          height: 5rem;
+        }
+  
+        .h-full {
+          height: 100%;
+        }
+  
+        .grid-sponsor-logo {
+          display: grid;
+          margin-top: 2.5rem;
+          grid-template-columns: repeat(5, minmax(0, 1fr));
+          gap: 0.5rem;
+          vertical-align: middle;
+        }
+  
+        .flex-box {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+  
+        .contact {
+          position: absolute;
+          bottom: 0.5rem;
+          font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+            Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
+            "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+            "Noto Color Emoji";
+          font-weight: 300;
+        }
+      </style>
+    </head>
+  
+    <body>
+      <div class="container">
+        <div class="wrapper">
+          <div class="left-page">
+            <div class="top-left-page">
               <img
-              src="${domain}/images/${data._id}/QRcode.png"
-                alt="" class="qr-code" />
-            </figure>
-          </div>
-          <p class="text-custom-lg-bottom">QUYỀN LỢI NHÀ TÀI TRỢ</p>
-          <div class="grid-sponsor">
-            <div class="benefit">QUYỀN LỢI</div>
-            <div class="typo">KIM CƯƠNG</div>
-            <div class="typo">VÀNG</div>
-            <div class="typo">BẠC</div>
-            <div class="typo">ĐỒNG</div>
-            <div class="typo benefit-col">
-              Được trình chiếu video giới thiệu trong chương trình
-            </div>
-            <div class="typo x-mark">x</div>
-            <div class="typo x-mark">x</div>
-            <div class="typo x-mark">x</div>
-            <div class="typo x-mark">x</div>
-            <div class="typo benefit-col">
-              In logo nhà tài trợ trên các ấn phẩm (thư mời, quà tặng, POSM
-              buổi họp báo, thông cáo báo chí,...)
-            </div>
-            <div class="typo x-mark">x</div>
-            <div class="typo x-mark">x</div>
-            <div class="typo x-mark">x</div>
-            <div class="typo x-mark"></div>
-            <div class="typo benefit-col">Phát biểu trong buổi hội thảo</div>
-            <div class="typo x-mark">x</div>
-            <div class="typo x-mark">x</div>
-            <div class="typo x-mark"></div>
-            <div class="typo x-mark"></div>
-            <div class="typo benefit-col">
-              Hướng dẫn kết nối giao thương kết nối ngay tại lễ
-            </div>
-            <div class="typo x-mark">x</div>
-            <div class="typo x-mark">x</div>
-            <div class="typo x-mark"></div>
-            <div class="typo x-mark"></div>
-            <div class="typo benefit-col">
-              Đăng bài PR doanh nghiệp trên báo
-            </div>
-            <div class="typo x-mark">x</div>
-            <div class="typo x-mark">x</div>
-            <div class="typo x-mark"></div>
-            <div class="typo x-mark"></div>
-            <div class="typo benefit-col">
-              Tham gia với vai trò thành viên BTC đóng góp cho các nội dung,
-              hoạt động của sự kiện
-            </div>
-            <div class="typo x-mark">x</div>
-            <div class="typo x-mark"></div>
-            <div class="typo x-mark"></div>
-            <div class="typo x-mark"></div>
-          </div>
-        </div>
-      </div>
-      <div class="right-page">
-        <p class="title-right">NỘI DUNG CHƯƠNG TRÌNH</p>
-        <p class="part">Phần 1: Lễ ra mắt sàn hoa tươi FMP</p>
-        <p class="part">Phần 2: Chia sẻ trải nghiệm</p>
-        <p class="part">Phần 3: Tọa đàm và hỏi đáp</p>
-        <div class="flex-col-items-center mt-negative-10">
-          <figure class="figure-logo">
-            <img src="https://s3-north1.viettelidc.com.vn/fmp-dev/landingpage-event/logo.png" alt=""
-              class="w-full h-full" />
-          </figure>
-          <div class="z-20">
-            <p class="title-right">ĐỊA ĐIỂM & THỜI GIAN</p>
-            <p class="text-blue-800 text-center font-light">
-              Chương trình được long trọng tổ chức tại:
-            </p>
-            <p class="text-lg part text-center">TÀU INDOCHINA QUEEN</p>
-            <p class="text-lg part text-center">
-              SỐ 5, ĐƯỜNG NGUYỄN TẤT THÀNH, P.12, QUẬN 4, TPHCM
-            </p>
-            <div class="time">
+                src="https://s3-north1.viettelidc.com.vn/fmp-dev/landingpage-event/fmp.png"
+                alt=""
+                class="h-20"
+              />
               <div class="">
-                <div class="month">Tháng 8</div>
-                <div class="time-grid">
-                  <div class="date">Thứ năm</div>
-                  <div class="day">10</div>
-                  <div class="date">07h30</div>
+                <div class="title-top">sanhoa.vn</div>
+                <div class="title-desc">Lướt nhẹ mua nhanh</div>
+                <div class="company-name">
+                  CÔNG TY CỔ PHẦN FLOWERMARKETPLACE - FMP
                 </div>
-                <p class="year">2023</p>
               </div>
             </div>
-            <div class="flex-box-sign">
-             <div class=""></div>
-              <div class="date-time">
-                <p class="italic">TPHCM, ngày 30 tháng 7 năm 2023</p>
-                <p class="">Tổng giám đốc</p>
-                <figure class="signature">
-                  <img src="https://s3-north1.viettelidc.com.vn/fmp-dev/landingpage-event/daumoc.png" alt=""
-                    class="h-full" />
+            <div class="text-center mt-1">
+              <p class="title">TRÂN TRỌNG KÍNH MỜI</p>
+              <p class="small-title">DOANH NHÂN</p>
+              <div class="dot-orange">Ông/bà: ${data.fullName}</div>
+              <div class="dot-blue">${data?.position}</div>
+              <div class="text-custom-lg">đến tham dự</div>
+              <div class="text-custom-2xl text-yellow-4">LỄ RA MẮT SÀN FMP</div>
+              <div class="text-custom-2xl text-orange-5">
+                Sàn giao dịch số hoa đầu tiên tại Việt Nam
+              </div>
+              <div class="text-custom-base">
+                &quot; FMP NỞ HOA - NUÔI DƯỠNG CỘNG ĐỒNG &quot;
+              </div>
+              <div class="qr-container">
+                <figure class="qr-wrapper">
+                  <img
+                  src="${domain}/images/${data._id}/QRcode.png"
+                    alt=""
+                    class="qr-code"
+                  />
                 </figure>
-                <p class="">Trần Thị Hữu Ái</p>
+              </div>
+              <p class="text-custom-lg-bottom">QUYỀN LỢI NHÀ TÀI TRỢ</p>
+              <div class="grid-sponsor">
+                <div class="benefit">QUYỀN LỢI</div>
+                <div class="typo">KIM CƯƠNG</div>
+                <div class="typo">VÀNG</div>
+                <div class="typo">BẠC</div>
+                <div class="typo">ĐỒNG</div>
+                <div class="typo benefit-col">
+                  Được trình chiếu video giới thiệu trong chương trình
+                </div>
+                <div class="typo x-mark">x</div>
+                <div class="typo x-mark">x</div>
+                <div class="typo x-mark">x</div>
+                <div class="typo x-mark">x</div>
+                <div class="typo benefit-col">
+                  In logo nhà tài trợ trên các ấn phẩm (thư mời, quà tặng, POSM
+                  buổi họp báo, thông cáo báo chí,...)
+                </div>
+                <div class="typo x-mark">x</div>
+                <div class="typo x-mark">x</div>
+                <div class="typo x-mark">x</div>
+                <div class="typo x-mark"></div>
+                <div class="typo benefit-col">Phát biểu trong buổi hội thảo</div>
+                <div class="typo x-mark">x</div>
+                <div class="typo x-mark">x</div>
+                <div class="typo x-mark"></div>
+                <div class="typo x-mark"></div>
+                <div class="typo benefit-col">
+                  Hướng dẫn kết nối giao thương kết nối ngay tại lễ
+                </div>
+                <div class="typo x-mark">x</div>
+                <div class="typo x-mark">x</div>
+                <div class="typo x-mark"></div>
+                <div class="typo x-mark"></div>
+                <div class="typo benefit-col">
+                  Đăng bài PR doanh nghiệp trên báo
+                </div>
+                <div class="typo x-mark">x</div>
+                <div class="typo x-mark">x</div>
+                <div class="typo x-mark"></div>
+                <div class="typo x-mark"></div>
+                <div class="typo benefit-col">
+                  Tham gia với vai trò thành viên BTC đóng góp cho các nội dung,
+                  hoạt động của sự kiện
+                </div>
+                <div class="typo x-mark">x</div>
+                <div class="typo x-mark"></div>
+                <div class="typo x-mark"></div>
+                <div class="typo x-mark"></div>
               </div>
             </div>
           </div>
+          <div class="right-page">
+            <div class="title-right">NỘI DUNG CHƯƠNG TRÌNH</div>
+            <p class="part">Phần 1: Lễ ra mắt sàn hoa tươi FMP</p>
+            <p class="part">Phần 2: Chia sẻ trải nghiệm</p>
+            <p class="part">Phần 3: Tọa đàm và hỏi đáp</p>
+            <div class="flex-col-items-center mt-negative-10">
+              <figure class="figure-logo">
+                <img
+                  src="https://s3-north1.viettelidc.com.vn/fmp-dev/landingpage-event/logo.png"
+                  alt=""
+                  class="w-full h-full"
+                />
+              </figure>
+              <div class="z-20">
+                <p class="title-right">ĐỊA ĐIỂM & THỜI GIAN</p>
+                <p class="text-blue-800 text-center font-light">
+                  Chương trình được long trọng tổ chức tại:
+                </p>
+                <p class="text-lg part text-center">TÀU INDOCHINA QUEEN</p>
+                <p class="text-lg part text-center">
+                  SỐ 5, ĐƯỜNG NGUYỄN TẤT THÀNH, P.12, QUẬN 4, TPHCM
+                </p>
+                <div class="time">
+                  <div class="">
+                    <div class="month">Tháng 8</div>
+                    <div class="time-grid">
+                      <div class="date">Thứ năm</div>
+                      <div class="day">10</div>
+                      <div class="date">07h30</div>
+                    </div>
+                    <p class="year">2023</p>
+                  </div>
+                </div>
+                <div class="flex-box-sign">
+                  <div class=""></div>
+                  <div class="date-time">
+                    <p class="italic">TPHCM, ngày 30 tháng 7 năm 2023</p>
+                    <p class="">Tổng giám đốc</p>
+                    <figure class="signature">
+                      <img
+                        src="https://s3-north1.viettelidc.com.vn/fmp-dev/landingpage-event/daumoc.png"
+                        alt=""
+                        class="h-full"
+                      />
+                    </figure>
+                    <p class="">Trần Thị Hữu Ái</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="grid-sponsor-logo">
+              <div class="flex-box">
+                <img
+                  src="https://s3-north1.viettelidc.com.vn/fmp-dev/landingpage-event/cls.jpg"
+                  alt=""
+                  class=""
+                  style="width: 75px"
+                />
+              </div>
+              <div class="flex-box">
+                <img
+                  src="https://s3-north1.viettelidc.com.vn/fmp-dev/landingpage-event/black_tulip.png"
+                  alt=""
+                  class=""
+                  style="width: 75px"
+                />
+              </div>
+              <div class="flex-box">
+                <img
+                  src="https://s3-north1.viettelidc.com.vn/fmp-dev/landingpage-event/FC_RGB_UOB.png"
+                  alt=""
+                  class=""
+                  style="width: 75px"
+                />
+              </div>
+              <div class="flex-box">
+                <img
+                  src="https://s3-north1.viettelidc.com.vn/fmp-dev/landingpage-event/vide.png"
+                  alt=""
+                  class=""
+                  style="width: 75px"
+                />
+              </div>
+              <div class="flex-box">
+                <img
+                  src="https://s3-north1.viettelidc.com.vn/fmp-dev/landingpage-event/tq.jpg"
+                  alt=""
+                  class=""
+                  style="width: 75px"
+                />
+              </div>
+              <div class="flex-box">
+                <img
+                  src="https://s3-north1.viettelidc.com.vn/fmp-dev/landingpage-event/greentech.png"
+                  alt=""
+                  class=""
+                  style="width: 75px"
+                />
+              </div>
+              <div class="flex-box">
+                <img
+                  src="https://s3-north1.viettelidc.com.vn/fmp-dev/landingpage-event/dalanhoa.png"
+                  alt=""
+                  class=""
+                  style="width: 75px"
+                />
+              </div>
+              <div class="flex-box">
+                <img
+                  src="https://s3-north1.viettelidc.com.vn/fmp-dev/landingpage-event/mocnhien.png"
+                  alt=""
+                  class=""
+                  style="width: 75px"
+                />
+              </div>
+              <div class="flex-box">
+                <img
+                  src="https://s3-north1.viettelidc.com.vn/fmp-dev/landingpage-event/lansium.png"
+                  alt=""
+                  class=""
+                  style="width: 75px"
+                />
+              </div>
+              <div class="flex-box">
+                <img
+                  src="https://s3-north1.viettelidc.com.vn/fmp-dev/landingpage-event/minhanh.jpg"
+                  alt=""
+                  class=""
+                  style="width: 75px"
+                />
+              </div>
+            </div>
+            <div class="contact">Thông tin liên hệ: 0983 227 941</div>
+          </div>
         </div>
-        <div class="grid-sponsor-logo">
-          <div class="flex-box">
-            <img src="https://s3-north1.viettelidc.com.vn/fmp-dev/landingpage-event/cls.jpg" alt="" class=""
-              style="width: 100px" />
-          </div>
-          <div class="flex-box">
-            <img src="https://s3-north1.viettelidc.com.vn/fmp-dev/landingpage-event/black_tulip.png" alt="" class=""
-              style="width: 100px" />
-          </div>
-          <div class="flex-box">
-            <img src="https://s3-north1.viettelidc.com.vn/fmp-dev/landingpage-event/FC_RGB_UOB.png" alt="" class=""
-              style="width: 100px" />
-          </div>
-          <div class="flex-box">
-            <img src="https://s3-north1.viettelidc.com.vn/fmp-dev/landingpage-event/vide.png" alt="" class=""
-              style="width: 100px" />
-          </div>
-          <div class="flex-box">
-            <img src="https://s3-north1.viettelidc.com.vn/fmp-dev/landingpage-event/tq.jpg" alt="" class=""
-              style="width: 100px" />
-          </div>
-          <div class="flex-box">
-            <img src="https://s3-north1.viettelidc.com.vn/fmp-dev/landingpage-event/greentech.png" alt="" class=""
-              style="width: 100px" />
-          </div>
-          <div class="flex-box">
-            <img src="https://s3-north1.viettelidc.com.vn/fmp-dev/landingpage-event/dalanhoa.png" alt="" class=""
-              style="width: 100px" />
-          </div>
-          <div class="flex-box">
-            <img src="https://s3-north1.viettelidc.com.vn/fmp-dev/landingpage-event/mocnhien.png" alt="" class=""
-              style="width: 100px" />
-          </div>
-          <div class="flex-box">
-            <img src="https://s3-north1.viettelidc.com.vn/fmp-dev/landingpage-event/lansium.png" alt="" class=""
-              style="width: 100px" />
-          </div>
-          <div class="flex-box">
-            <img src="https://s3-north1.viettelidc.com.vn/fmp-dev/landingpage-event/minhanh.jpg" alt="" class=""
-              style="width: 100px" />
-          </div>
-        </div>
-        <div class="contact">Thông tin liên hệ: 0983 227 941</div>
       </div>
-    </div>
-  </div>
-</body>
+    </body>
+  </html>
+  `;
+  //   return `<!DOCTYPE html>
+  // <html lang="en">
 
-</html>`;
-  // return `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+  // <head>
+  //   <meta charset="UTF-8" />
+  //   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  //   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  //   <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+  //   <title>Document</title>
+  //   <style>
+  //     .container {
+  //       padding: 1.25rem;
+  //       width: 1000px;
+  //       min-height: 1300px;
+  //       background-image: linear-gradient(to right, var(--tw-gradient-stops));
+  //       background-color: #1d4ed8;
+  //     }
+
+  //     .wrapper {
+  //       display: grid;
+  //       grid-template-columns: repeat(1, minmax(0, 1fr));
+
+  //       width: 100%;
+  //       min-height: 100%;
+  //       background-color: #ffffff;
+
+  //       @media (min-width: 768px) {
+  //         grid-template-columns: repeat(2, minmax(0, 1fr));
+  //       }
+  //     }
+
+  //     .left-page {
+  //       padding-bottom: 2.5rem;
+  //       border-right-width: 2px;
+  //       border-right: 2px solid #1e40af;
+  //     }
+
+  //     .top-left-page {
+  //       display: flex;
+  //       margin: 0.5rem;
+  //       justify-content: space-between;
+  //     }
+
+  //     .h-20 {
+  //       height: 5rem;
+  //     }
+
+  //     .title-top {
+  //       font-size: 2.25rem;
+  //       /* Equivalent to text-4xl */
+  //       text-align: right;
+  //       color: transparent;
+  //       background-clip: text;
+  //       background-image: linear-gradient(to left, #1e40af, #1e90ff);
+  //       -webkit-background-clip: text;
+  //       -webkit-text-fill-color: transparent;
+  //       font-weight: 600;
+  //       /* Equivalent to font-semibold */
+  //     }
+
+  //     .title-desc {
+  //       font-size: 0.75rem;
+  //       /* Equivalent to text-xs */
+  //       text-align: right;
+  //       color: transparent;
+  //       background-clip: text;
+  //       background-image: linear-gradient(to left, #1e40af, #1e90ff);
+
+  //       -webkit-background-clip: text;
+  //       -webkit-text-fill-color: transparent;
+  //       font-weight: 600;
+  //     }
+
+  //     .company-name {
+  //       font-size: 0.75rem;
+  //       /* Equivalent to text-xs */
+  //       text-align: right;
+  //       color: transparent;
+  //       background-clip: text;
+  //       background-image: linear-gradient(to left, #1e40af, #1e90ff);
+  //       -webkit-background-clip: text;
+  //       -webkit-text-fill-color: transparent;
+  //       font-weight: 300;
+  //       /* Equivalent to font-light */
+  //     }
+
+  //     .text-center {
+  //       text-align: center;
+  //     }
+
+  //     .mt-1 {
+  //       margin-top: 0.25rem;
+  //     }
+
+  //     .title {
+
+  //       font-size: 1.5rem;
+  //       line-height: 2rem;
+  //       font-weight: 600;
+  //       color: #1e40af;
+  //     }
+
+  //     .small-title {
+  //       margin-top: 0.75rem;
+
+  //       font-size: 1.5rem;
+  //       line-height: 2rem;
+  //       font-weight: 300;
+  //       color: #1e40af;
+  //     }
+
+  //     .dot-orange {
+  //       font-size: 1.5rem;
+  //       /* Equivalent to text-2xl */
+  //       margin-top: 0.5rem;
+  //       margin-bottom: 0.5rem;
+  //       color: #ffa500;
+  //       line-height: 2rem;
+  //     }
+
+  //     .dot-blue {
+  //       font-size: 1.5rem;
+  //       /* Equivalent to text-2xl */
+  //       padding-bottom: 1.25rem;
+  //       /* Equivalent to pb-5 */
+  //       color: #1e40af;
+  //     }
+
+  //     /* Custom CSS classes */
+  //     .text-custom-lg {
+  //       margin-top: 0.5rem;
+  //       font-size: 1.125rem;
+  //       line-height: 1.75rem;
+  //       font-weight: 300;
+  //       color: #1e40af;
+  //     }
+
+  //     .text-custom-2xl {
+  //       margin-top: 0.75rem;
+  //       font-size: 2rem;
+  //       line-height: 2rem;
+  //       font-weight: 600;
+  //     }
+
+  //     .text-custom-orange {
+  //       font-weight: 600;
+  //       /* Equivalent to font-semibold */
+  //       font-family: serif;
+  //       /* Equivalent to font-serif */
+  //       margin-top: 1.5rem;
+  //       /* Equivalent to mt-3 */
+  //     }
+
+  //     .text-custom-base {
+  //       font-size: 1.3rem;
+  //       /* Equivalent to text-base */
+  //       color: #1e40af;
+  //       /* Equivalent to text-blue-800 */
+  //       font-weight: 100;
+  //       /* Equivalent to font-thin */
+  //       font-family: serif;
+  //       /* Equivalent to font-serif */
+  //       margin-top: 1.5rem;
+  //       /* Equivalent to mt-3 */
+  //     }
+
+  //     .text-yellow-4 {
+  //       color: #ffd700;
+  //       /* Equivalent to text-yellow-400 */
+  //     }
+
+  //     .text-orange-5 {
+  //       color: #ffa500;
+  //       /* Equivalent to text-orange-500 */
+  //     }
+
+  //     .qr-container {
+  //       display: flex;
+  //       margin-top: 0.75rem;
+  //       margin-bottom: 0.75rem;
+  //       justify-content: center;
+  //     }
+
+  //     .qr-wrapper {
+  //       width: 13rem;
+  //       height: 13rem;
+  //     }
+
+  //     .qr-code {
+  //       object-fit: cover;
+  //       width: 100%;
+  //       height: 100%;
+  //     }
+
+  //     .text-custom-lg-bottom {
+  //       font-size: 1.125rem;
+  //       /* Equivalent to text-lg */
+  //       color: #1e40af;
+  //       /* Equivalent to text-blue-800 */
+  //       font-weight: 600;
+  //       /* Equivalent to font-semibold */
+  //       font-family: serif;
+  //       /* Equivalent to font-serif */
+  //       margin-top: 1rem;
+  //       /* Equivalent to my-3 */
+  //       margin-bottom: 1rem;
+  //       /* Equivalent to my-3 */
+  //     }
+
+  //     .grid-sponsor {
+  //       /* Custom CSS class */
+
+  //       display: grid;
+  //       grid-template-columns: repeat(7,
+  //           minmax(0, 1fr));
+  //       /* Equivalent to grid-cols-7 */
+  //       gap: 0.5rem;
+  //       /* Equivalent to gap-2 */
+  //       font-size: 0.875rem;
+  //       /* Equivalent to text-sm */
+  //       color: #1e40af;
+  //       /* Equivalent to text-blue-800 */
+  //       font-weight: 500;
+  //       padding-left: 1rem;
+  //       padding-right: 1rem;
+  //       /* Equivalent to font-medium */
+  //     }
+
+  //     .benefit {
+  //       padding-top: 0.5rem;
+  //       padding-bottom: 0.5rem;
+  //       grid-column: span 3 / span 3;
+
+  //       border: 2px solid #1e40af;
+  //     }
+
+  //     .typo {
+  //       padding-top: 0.5rem;
+  //       padding-bottom: 0.5rem;
+
+  //       border: 2px solid #1e40af;
+  //     }
+
+  //     .x-mark {
+  //       font-size: 1.5rem;
+  //       line-height: 2rem;
+  //       font-weight: 300;
+  //     }
+
+  //     .benefit-col {
+  //       display: flex;
+  //       grid-column: span 3 / span 3;
+  //       justify-content: center;
+  //       align-items: center;
+  //       font-size: 0.75rem;
+  //       line-height: 1rem;
+  //       font-style: italic;
+  //     }
+
+  //     .right-page {
+  //       position: relative;
+  //       padding-left: 0.75rem;
+  //       padding-right: 0.75rem;
+  //     }
+
+  //     .title-right {
+  //       padding-top: 0.75rem;
+  //       padding-bottom: 0.75rem;
+
+  //       font-size: 1.875rem;
+  //       line-height: 2.25rem;
+  //       font-weight: 600;
+  //       text-align: center;
+  //       color: #1e40af;
+  //     }
+
+  //     .part {
+
+  //       font-weight: 600;
+  //       color: #1e40af;
+  //     }
+
+  //     .text-right {
+  //       text-align: right;
+  //     }
+
+  //     .flex-col-items-center {
+  //       padding-top: 50px;
+  //       padding-top: 50px;
+  //       display: flex;
+  //       flex-direction: column;
+  //       align-items: center;
+  //     }
+
+  //     /* Additional class for z-index and margin-top */
+  //     .mt-negative-10 {
+  //       margin-top: -10px;
+  //       z-index: -10;
+  //     }
+
+  //     .figure-logo {
+  //       position: absolute;
+  //       opacity: 0.3;
+  //       height: 500px;
+  //     }
+
+  //     .z-20 {
+  //       z-index: 20;
+  //     }
+
+  //     .text-lg {
+  //       font-size: 1.125rem;
+  //       line-height: 1.75rem;
+  //     }
+
+  //     .time {
+  //       display: flex;
+  //       flex-direction: column;
+  //       align-items: center;
+  //     }
+
+  //     .month {
+  //       font-size: 1.25rem;
+  //       line-height: 1.75rem;
+  //       text-align: center;
+  //       color: #1e40af;
+  //     }
+
+  //     .time-grid {
+  //       display: grid;
+  //       grid-template-columns: repeat(3, minmax(0, 1fr));
+  //     }
+
+  //     .date {
+  //       padding-top: 0.25rem;
+  //       padding-bottom: 0.25rem;
+  //       padding-left: 1.25rem;
+  //       padding-right: 1.25rem;
+  //       border-top: 2px solid #1e40af;
+  //       border-bottom: 2px solid #1e40af;
+  //       font-size: 1.25rem;
+  //       line-height: 1.75rem;
+  //       color: #1e40af;
+  //     }
+
+  //     .day {
+  //       font-size: 3rem;
+  //       line-height: 1;
+  //       text-align: center;
+  //       color: #1e40af;
+  //     }
+
+  //     .year {
+  //       margin-top: 0.5rem;
+  //       margin-bottom: 0.5rem;
+  //       font-size: 1.25rem;
+  //       line-height: 1.75rem;
+  //       text-align: center;
+  //       color: #1e40af;
+  //     }
+
+  //     .flex-box-sign {
+  //       display: flex;
+  //       z-index: 20;
+  //       justify-content: space-between;
+  //     }
+
+  //     .date-time {
+  //       font-weight: 600;
+  //       text-align: center;
+  //       color: #1e40af;
+  //     }
+
+  //     .italic {
+  //       font-style: italic;
+  //     }
+
+  //     .signature {
+  //       display: flex;
+  //       justify-content: flex-end;
+  //       height: 8rem;
+  //     }
+
+  //     .h-full {
+  //       height: 100%;
+  //     }
+
+  //     .grid-sponsor-logo {
+  //       display: grid;
+  //       margin-top: 2.5rem;
+  //       grid-template-columns: repeat(5, minmax(0, 1fr));
+  //       gap: 0.5rem;
+  //       vertical-align: middle;
+  //     }
+
+  //     .flex-box {
+  //       display: flex;
+  //       justify-content: center;
+  //       align-items: center;
+  //     }
+
+  //     .contact {
+  //       position: absolute;
+  //       bottom: 0.5rem;
+  //       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+  //         Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
+  //         "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+  //         "Noto Color Emoji";
+  //       font-weight: 300;
+  //     }
+  //   </style>
+  // </head>
+
+  // <body>
+  //   <div class="container">
+  //     <div class="wrapper">
+  //       <div class="left-page">
+  //         <div class="top-left-page">
+  //           <img src="https://s3-north1.viettelidc.com.vn/fmp-dev/landingpage-event/fmp.png" alt="" class="h-20" />
+  //           <div class="">
+  //             <div class="title-top">sanhoa.vn</div>
+  //             <div class="title-desc">Lướt nhẹ mua nhanh</div>
+  //             <div class="company-name">
+  //               CÔNG TY CỔ PHẦN FLOWERMARKETPLACE - FMP
+  //             </div>
+  //           </div>
+  //         </div>
+  //         <div class="text-center mt-1">
+  //           <p class="title">TRÂN TRỌNG KÍNH MỜI</p>
+  //           <p class="small-title">DOANH NHÂN</p>
+  //           <div class="dot-orange">
+  //             Ông/Bà
+  //           </div>
+  //           <div class="dot-blue">
+  //             ${data.fullName}
+  //           </div>
+  //           <div class="text-custom-lg">đến tham dự</div>
+  //           <p class="text-custom-2xl text-yellow-4">LỄ RA MẮT SÀN FMP</p>
+  //           <p class="text-custom-2xl text-orange-5">
+  //             Sàn giao dịch số hoa đầu tiên tại Việt Nam
+  //           </p>
+  //           <p class="text-custom-base">
+  //             &quot; FMP NỞ HOA - NUÔI DƯỠNG CỘNG ĐỒNG &quot;
+  //           </p>
+  //           <div class="qr-container">
+  //             <figure class="qr-wrapper">
+  //               <img
+  //               src="${domain}/images/${data._id}/QRcode.png"
+  //                 alt="" class="qr-code" />
+  //             </figure>
+  //           </div>
+  //           <p class="text-custom-lg-bottom">QUYỀN LỢI NHÀ TÀI TRỢ</p>
+  //           <div class="grid-sponsor">
+  //             <div class="benefit">QUYỀN LỢI</div>
+  //             <div class="typo">KIM CƯƠNG</div>
+  //             <div class="typo">VÀNG</div>
+  //             <div class="typo">BẠC</div>
+  //             <div class="typo">ĐỒNG</div>
+  //             <div class="typo benefit-col">
+  //               Được trình chiếu video giới thiệu trong chương trình
+  //             </div>
+  //             <div class="typo x-mark">x</div>
+  //             <div class="typo x-mark">x</div>
+  //             <div class="typo x-mark">x</div>
+  //             <div class="typo x-mark">x</div>
+  //             <div class="typo benefit-col">
+  //               In logo nhà tài trợ trên các ấn phẩm (thư mời, quà tặng, POSM
+  //               buổi họp báo, thông cáo báo chí,...)
+  //             </div>
+  //             <div class="typo x-mark">x</div>
+  //             <div class="typo x-mark">x</div>
+  //             <div class="typo x-mark">x</div>
+  //             <div class="typo x-mark"></div>
+  //             <div class="typo benefit-col">Phát biểu trong buổi hội thảo</div>
+  //             <div class="typo x-mark">x</div>
+  //             <div class="typo x-mark">x</div>
+  //             <div class="typo x-mark"></div>
+  //             <div class="typo x-mark"></div>
+  //             <div class="typo benefit-col">
+  //               Hướng dẫn kết nối giao thương kết nối ngay tại lễ
+  //             </div>
+  //             <div class="typo x-mark">x</div>
+  //             <div class="typo x-mark">x</div>
+  //             <div class="typo x-mark"></div>
+  //             <div class="typo x-mark"></div>
+  //             <div class="typo benefit-col">
+  //               Đăng bài PR doanh nghiệp trên báo
+  //             </div>
+  //             <div class="typo x-mark">x</div>
+  //             <div class="typo x-mark">x</div>
+  //             <div class="typo x-mark"></div>
+  //             <div class="typo x-mark"></div>
+  //             <div class="typo benefit-col">
+  //               Tham gia với vai trò thành viên BTC đóng góp cho các nội dung,
+  //               hoạt động của sự kiện
+  //             </div>
+  //             <div class="typo x-mark">x</div>
+  //             <div class="typo x-mark"></div>
+  //             <div class="typo x-mark"></div>
+  //             <div class="typo x-mark"></div>
+  //           </div>
+  //         </div>
+  //       </div>
+  //       <div class="right-page">
+  //         <p class="title-right">NỘI DUNG CHƯƠNG TRÌNH</p>
+  //         <p class="part">Phần 1: Lễ ra mắt sàn hoa tươi FMP</p>
+  //         <p class="part">Phần 2: Chia sẻ trải nghiệm</p>
+  //         <p class="part">Phần 3: Tọa đàm và hỏi đáp</p>
+  //         <div class="flex-col-items-center mt-negative-10">
+  //           <figure class="figure-logo">
+  //             <img src="https://s3-north1.viettelidc.com.vn/fmp-dev/landingpage-event/logo.png" alt=""
+  //               class="w-full h-full" />
+  //           </figure>
+  //           <div class="z-20">
+  //             <p class="title-right">ĐỊA ĐIỂM & THỜI GIAN</p>
+  //             <p class="text-blue-800 text-center font-light">
+  //               Chương trình được long trọng tổ chức tại:
+  //             </p>
+  //             <p class="text-lg part text-center">TÀU INDOCHINA QUEEN</p>
+  //             <p class="text-lg part text-center">
+  //               SỐ 5, ĐƯỜNG NGUYỄN TẤT THÀNH, P.12, QUẬN 4, TPHCM
+  //             </p>
+  //             <div class="time">
+  //               <div class="">
+  //                 <div class="month">Tháng 8</div>
+  //                 <div class="time-grid">
+  //                   <div class="date">Thứ năm</div>
+  //                   <div class="day">10</div>
+  //                   <div class="date">07h30</div>
+  //                 </div>
+  //                 <p class="year">2023</p>
+  //               </div>
+  //             </div>
+  //             <div class="flex-box-sign">
+  //              <div class=""></div>
+  //               <div class="date-time">
+  //                 <p class="italic">TPHCM, ngày 30 tháng 7 năm 2023</p>
+  //                 <p class="">Tổng giám đốc</p>
+  //                 <figure class="signature">
+  //                   <img src="https://s3-north1.viettelidc.com.vn/fmp-dev/landingpage-event/daumoc.png" alt=""
+  //                     class="h-full" />
+  //                 </figure>
+  //                 <p class="">Trần Thị Hữu Ái</p>
+  //               </div>
+  //             </div>
+  //           </div>
+  //         </div>
+  //         <div class="grid-sponsor-logo">
+  //           <div class="flex-box">
+  //             <img src="https://s3-north1.viettelidc.com.vn/fmp-dev/landingpage-event/cls.jpg" alt="" class=""
+  //               style="width: 100px" />
+  //           </div>
+  //           <div class="flex-box">
+  //             <img src="https://s3-north1.viettelidc.com.vn/fmp-dev/landingpage-event/black_tulip.png" alt="" class=""
+  //               style="width: 100px" />
+  //           </div>
+  //           <div class="flex-box">
+  //             <img src="https://s3-north1.viettelidc.com.vn/fmp-dev/landingpage-event/FC_RGB_UOB.png" alt="" class=""
+  //               style="width: 100px" />
+  //           </div>
+  //           <div class="flex-box">
+  //             <img src="https://s3-north1.viettelidc.com.vn/fmp-dev/landingpage-event/vide.png" alt="" class=""
+  //               style="width: 100px" />
+  //           </div>
+  //           <div class="flex-box">
+  //             <img src="https://s3-north1.viettelidc.com.vn/fmp-dev/landingpage-event/tq.jpg" alt="" class=""
+  //               style="width: 100px" />
+  //           </div>
+  //           <div class="flex-box">
+  //             <img src="https://s3-north1.viettelidc.com.vn/fmp-dev/landingpage-event/greentech.png" alt="" class=""
+  //               style="width: 100px" />
+  //           </div>
+  //           <div class="flex-box">
+  //             <img src="https://s3-north1.viettelidc.com.vn/fmp-dev/landingpage-event/dalanhoa.png" alt="" class=""
+  //               style="width: 100px" />
+  //           </div>
+  //           <div class="flex-box">
+  //             <img src="https://s3-north1.viettelidc.com.vn/fmp-dev/landingpage-event/mocnhien.png" alt="" class=""
+  //               style="width: 100px" />
+  //           </div>
+  //           <div class="flex-box">
+  //             <img src="https://s3-north1.viettelidc.com.vn/fmp-dev/landingpage-event/lansium.png" alt="" class=""
+  //               style="width: 100px" />
+  //           </div>
+  //           <div class="flex-box">
+  //             <img src="https://s3-north1.viettelidc.com.vn/fmp-dev/landingpage-event/minhanh.jpg" alt="" class=""
+  //               style="width: 100px" />
+  //           </div>
+  //         </div>
+  //         <div class="contact">Thông tin liên hệ: 0983 227 941</div>
+  //       </div>
+  //     </div>
+  //   </div>
+  // </body>
+
+  // </html>`;
+
   // <html
   //   xmlns="http://www.w3.org/1999/xhtml"
   //   xmlns:o="urn:schemas-microsoft-com:office:office"
