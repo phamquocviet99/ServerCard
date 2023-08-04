@@ -50,9 +50,9 @@ export const getImageInvitation = async (req, res) => {
   const userData = await usersJoinModel.findById({ _id: req.params.id });
   Promise.all([
     genImageInvitation(userData, res),
-    // update(req.params.id, {
-    //   isReceivedEmail: true,
-    // }),
+    update(req.params.id, {
+      isReceivedEmail: true,
+    }),
   ]).catch((err) => {
     return new Error(err);
   });
