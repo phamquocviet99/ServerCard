@@ -25,6 +25,11 @@ const schema = new mongoose.Schema(
       type: String,
       require: true,
     },
+    gender: {
+      type: String,
+      require: true,
+      default: "male",
+    },
     position: {
       type: String,
       // require: true,

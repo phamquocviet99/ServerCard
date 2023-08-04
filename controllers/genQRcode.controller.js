@@ -94,12 +94,14 @@ export const genImageInvitation = async (data, res) => {
 
     const textBlocks = [
       {
-        text: `Ông/Bà : ${data.fullName} `,
+        text: `${
+          data.gender === "male" ? "Ông" : "Bà"
+        } : ${data.fullName.trim()} `,
         font: "italic bold 28px Times New Roman",
         color: "#15803d",
       },
       {
-        text: `${data.position}`,
+        text: `${data.position.trim() ? data.position : ""}`,
         font: "italic 23px Times New Roman",
         color: "#15803d",
       },
