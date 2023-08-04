@@ -26,10 +26,8 @@ const schema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    isReceivedZalo: {
-      type: Boolean,
-      require: true,
-      default: false,
+    errorZalo: {
+      type: String,
     },
     isErrorEmail: {
       type: Boolean,

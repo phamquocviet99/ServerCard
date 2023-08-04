@@ -47,15 +47,32 @@ export const getImageInvitation = async (req, res) => {
       success: false,
       code: 500,
     });
-  const userData = await usersJoinModel.findById({ _id: req.params.id });
-  Promise.all([
-    genImageInvitation(userData, res),
-    update(req.params.id, {
-      isReceivedEmail: true,
-    }),
-  ]).catch((err) => {
-    return new Error(err);
-  });
+  await usersJoinModel
+    .findById({ _id: req.params.id })
+    .then((result) => {
+      if (!result) {
+        return res.status(500).json({
+          message: "Không tìm thấy đối tượng yêu cầu",
+          success: false,
+          code: 500,
+        });
+      }
+      Promise.all([
+        genImageInvitation(result, res),
+        update(req.params.id, {
+          isReceivedEmail: true,
+        }),
+      ]).catch((err) => {
+        return new Error(err);
+      });
+    })
+    .catch((error) => {
+      return res.status(500).json({
+        error: err,
+        success: false,
+        code: 500,
+      });
+    });
 };
 
 export const genImageInvitation = async (data, res) => {
@@ -101,12 +118,15 @@ export const genImageInvitation = async (data, res) => {
         color: "#15803d",
       },
       {
-        text: `${data.position.trim() ? data.position : ""}`,
+        text: data.companyName
+          ? `${data.position ? data.position : ""} tại công ty ${
+              data.companyName ? data.companyName : ""
+            }`
+          : "- - - - - - - - - - - - - - - -",
         font: "italic 23px Times New Roman",
         color: "#15803d",
       },
     ];
-
     var yText = 275;
     // Vẽ nhiều đoạn văn bản với các font khác nhau
     textBlocks.forEach(({ text, font, color }) => {
@@ -174,7 +194,11 @@ export const genBase64ImageInvitation = async (data) => {
         color: "#15803d",
       },
       {
-        text: `${data.position.trim() ? data.position : ""}`,
+        text: data.companyName
+          ? `${data.position ? data.position : ""} tại công ty ${
+              data.companyName ? data.companyName : ""
+            }`
+          : "- - - - - - - - - - - - - - - -",
         font: "italic 23px Times New Roman",
         color: "#15803d",
       },

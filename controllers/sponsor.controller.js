@@ -1,28 +1,29 @@
-import userModel from "../models/users.join.model.js";
-import excel from "excel4node";
+import sponsorModel from "../models/sponsor.model.js";
+
 import dotenv from "dotenv";
 import { nanoid } from "nanoid";
 import nodemailer from "nodemailer";
-// import base64Img from "base64-img";
-import qr from "qrcode";
-import { templateEmail } from "../template/templateEmail.js";
-import { uploadS3Base64, uploadS3Buffer } from "../middleware/AWS_S3.js";
+
 import validator from "validator";
-import nodeHtmlToImage from "node-html-to-image";
+
 import { addTask } from "./taskSendInvitation.controller.js";
 // import puppeteer from "puppeteer";
 
 dotenv.config();
-const user = process.env.GMAIL_USER;
-const password = process.env.GMAIL_PASSWORD;
-const service = process.env.MAIL_SERVICE;
-const bucketQRCODE = process.env.AWS_BUCKET_QRCODE;
+
 export const register = async (req, res, next) => {
   var id = null;
   id = nanoid();
   req.body._id = id;
 
-  if (!req.body.fullName || !req.body.phone || !req.body.gender) {
+  if (
+    !req.body.fullName ||
+    !req.body.phone ||
+    !req.body.gender ||
+    !req.body.unit ||
+    !req.body.pack ||
+    !req.body.role
+  ) {
     return res.status(400).send({
       success: false,
       code: -1,
@@ -38,16 +39,14 @@ export const register = async (req, res, next) => {
       });
     }
   }
-
-  req.body.urlQRcode = "urlQRCode";
-  const user = new userModel(req.body);
-  user
+  const newSponsor = new sponsorModel(req.body);
+  newSponsor
     .save()
     .then(async (result) => {
       res.status(200).json({
         success: true,
         code: 0,
-        message: "Đăng kí tham gia thành công !",
+        message: "Đăng kí  thành công !",
         data: result,
       });
     })
@@ -58,56 +57,22 @@ export const register = async (req, res, next) => {
         code: 500,
       });
     });
-  addTask({
-    _id: id,
-    email: req.body.email ? req.body.email : null,
-    zalo: req.body.phone,
-  });
 };
+
 export const getAll = async (req, res) => {
   try {
-    const users = await userModel.find();
+ 
+    const users = await sponsorModel.find();
     res.status(200).json({ success: true, data: users });
   } catch (err) {
     res.status(500).json({ error: true });
   }
 };
 
-export const sendEmail = (data) => {
-  try {
-    if (!data.email) return;
-    const transporter = nodemailer.createTransport({
-      service: service,
-      auth: {
-        user: user,
-        pass: password,
-      },
-    });
-    let message = {
-      from: user,
-      to: data.email,
-      subject: "Thư mời tham gia lễ ra mắt Sàn Hoa FMP",
-      html: templateEmail(data),
-    };
-    return new Promise(function (resolve, reject) {
-      transporter
-        .sendMail(message)
-        .catch((error) => {
-          reject(new Error(error));
-        })
-        .then((result) => {
-          resolve(result);
-        });
-    });
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 export const getById = async (req, res) => {
   try {
     if (req.params.id) {
-      userModel
+      sponsorModel
         .findById({ _id: req.params.id })
         .then((result) => {
           if (result) {
@@ -147,8 +112,3 @@ export const getById = async (req, res) => {
     });
   }
 };
-
-
-
-
-

@@ -36,11 +36,9 @@ export const checkSendEmail = async () => {
     }
     Promise.all(taskSend)
       .then((results) => {
-        console.log("All tasks send email successfully");
-        console.log(listEmailNotSend.length);
-        // results.forEach((result) => {
-        //   console.log(result);
-        // });
+        console.log(
+          ` ${listEmailNotSend.length} tasks send email successfully`
+        );
       })
       .catch((error) => {
         console.error("Some tasks failed");
@@ -59,16 +57,19 @@ export const checkSendZalo = async () => {
     for (let i = 0; i < listZaloNotSend.length; i++) {
       taskSend.push(sendZalo(listZaloNotSend[i]._id));
     }
-    console.log(listZaloNotSend.length);
     Promise.all(taskSend)
       .then((results) => {
-        console.log("All tasks send zalo successfully");
+        console.log(` ${listZaloNotSend.length} tasks send zalo successfully`);
+        results.forEach((element) => {
+          console.error(element);
+        });
       })
       .catch((error) => {
-        console.error("Some tasks zalo failed");
         console.error(error);
       });
-  } catch (error) {}
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 export async function sendEmail(id) {
@@ -106,7 +107,7 @@ export async function sendEmail(id) {
     });
   } catch (error) {
     console.log(error);
-    new Error(error);
+    throw new Error(error);
   }
 }
 
@@ -117,9 +118,15 @@ export async function sendZalo(id) {
       _id: id,
     });
 
-    await genBase64ImageInvitation(userData).then((base64) => {
-      dataImage = base64.replace(/^data:image\/\w+;base64,/, "");
-    });
+    if (!userData) return new Error("Không tìm thấy đối tượng");
+
+    await genBase64ImageInvitation(userData)
+      .then((base64) => {
+        dataImage = base64.replace(/^data:image\/\w+;base64,/, "");
+      })
+      .catch((error) => {
+        return new Error("Không thể tạo thiệp mời", error);
+      });
     let listMessage = [
       {
         type: "text",
@@ -163,28 +170,39 @@ export async function sendZalo(id) {
     ];
     return new Promise(async function (resolve, reject) {
       if (!userData.phone) resolve();
-      try {
-        for (var mess of listMessage) {
-          if (mess.type === "text") {
-            await sendTextZalo(mess.data).catch(() => reject(false));
-          } else {
-            console.log("fff");
-            await sendPhotoZalo(mess.data).catch(() => reject(false));
-          }
+      var error = false;
+      for (var mess of listMessage) {
+        if (error) break;
+        if (mess.type === "text") {
+          await sendTextZalo(mess.data).catch((err) => {
+            error = true;
+            update(userData._id, {
+              isErrorZalo: true,
+              errorZalo: err,
+            });
+            reject(err);
+          });
+        } else {
+          await sendPhotoZalo(mess.data).catch((err) => {
+            error = true;
+            update(userData._id, {
+              isErrorZalo: true,
+              errorZalo: err,
+            });
+            reject(err);
+          });
         }
-        await update(userData._id, {
-          isSentZalo: true,
-        });
-      } catch (error) {
-        update(userData._id, {
-          isErrorZalo: true,
-        });
       }
+      await update(userData._id, {
+        isSentZalo: true,
+      });
     });
   } catch (error) {
-    console.log(error);
-    // new Error(error);
-    return false;
+    update(userData._id, {
+      isErrorZalo: true,
+      errorZalo: err,
+    });
+    console.error(error);
   }
 }
 
@@ -194,7 +212,7 @@ export function sendTextZalo(data) {
       await axiosClient
         .post("/zalo/send-text", JSON.stringify(data))
         .then((result) => {
-          resolve(true);
+          result.success ? resolve(true) : reject(result.message);
         })
         .catch((error) => {
           console.log("Lỗi gửi zalo" + error);
@@ -212,8 +230,7 @@ export function sendPhotoZalo(data) {
       await axiosClient
         .post("/zalo/send-photo", JSON.stringify(data))
         .then((result) => {
-          console.log(result);
-          resolve(true);
+          result.success ? resolve(true) : reject(result.message);
         })
         .catch((error) => {
           console.log("Lỗi gửi zalo" + error);
@@ -234,7 +251,6 @@ export const update = async (id, data) => {
       console.log(`${id} đã được cập nhật`);
     })
     .catch((err) => {
-      console.error(error);
-      // new Error(err);
+      console.error(err);
     });
 };

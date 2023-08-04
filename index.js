@@ -7,6 +7,7 @@ import userRoutes from "./routes/users.routes.js";
 import vCardRoutes from "./routes/vCard.routes.js";
 import usersJoinRoutes from "./routes/users.join.routes.js";
 import genQRcodeRoutes from "./routes/genQRcode.routes.js";
+import sponsorRoutes from "./routes/sponsor.routes.js";
 import multer from "multer";
 import schedule from "node-schedule";
 import {
@@ -33,6 +34,8 @@ app.use("/auth", userRoutes);
 app.use("/v-card", vCardRoutes);
 app.use("/event", usersJoinRoutes);
 app.use("/images", genQRcodeRoutes);
+app.use("/sponsor", sponsorRoutes);
+
 app.get("/sendEmail", checkSendEmail);
 app.get("/sendZalo", checkSendZalo);
 
@@ -41,7 +44,6 @@ schedule.scheduleJob("*/10 * * * *", function () {
   checkSendEmail();
   checkSendZalo();
 });
-
 
 app.use((error, req, res, next) => {
   if (error instanceof multer.MulterError) {
