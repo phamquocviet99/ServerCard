@@ -29,13 +29,11 @@ app.use("/auth", userRoutes);
 app.use("/v-card", vCardRoutes);
 app.use("/event", usersJoinRoutes);
 app.use("/images", genQRcodeRoutes);
-app.get("/test", checkSendEmail);
+app.get("/sendEmail", checkSendEmail);
 
-// schedule.scheduleJob("*/60 * * * *", function () {
-//   checkSendEmail();
-// });
-
-
+schedule.scheduleJob("*/1 * * * *", function () {
+  checkSendEmail();
+});
 
 // app.get("/generate-image", async (req, res) => {
 //   const width = 1488; // Chiều rộng của ảnh nền

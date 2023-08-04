@@ -33,7 +33,7 @@ export const checkSendEmail = async () => {
     }
     Promise.all(taskSend)
       .then((results) => {
-        console.log("All tasks completed successfully");
+        console.log("All tasks send email successfully");
         console.log(listEmailNotSend.length);
         // results.forEach((result) => {
         //   console.log(result);
@@ -90,7 +90,7 @@ export const update = async (id, data) => {
   await taskSendInvitationModel
     .updateOne({ _id: id }, data)
     .then((result) => {
-      console.log(result);
+      console.log(`${id} đã được cập nhật`);
     })
     .catch((err) => {
       console.error(error);
