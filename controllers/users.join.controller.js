@@ -9,17 +9,17 @@ import { templateEmail } from "../template/templateEmail.js";
 import { uploadS3Base64, uploadS3Buffer } from "../middleware/AWS_S3.js";
 import validator from "validator";
 import nodeHtmlToImage from "node-html-to-image";
-import { addTask, sendZalo } from "./taskSendInvitation.controller.js";
-// import puppeteer from "puppeteer";
-
+import {
+  addTask,
+  sendEmail,
+  sendZalo,
+} from "./taskSendInvitation.controller.js";
 dotenv.config();
-const user = process.env.GMAIL_USER;
-const password = process.env.GMAIL_PASSWORD;
-const service = process.env.MAIL_SERVICE;
+
 const bucketQRCODE = process.env.AWS_BUCKET_QRCODE;
+const domainVcard = process.env.DOMAIN_VCARD;
 export const register = async (req, res, next) => {
-  var id = null;
-  id = nanoid();
+  var id = nanoid();
   req.body._id = id;
 
   if (!req.body.fullName || !req.body.phone || !req.body.gender) {
@@ -39,85 +39,86 @@ export const register = async (req, res, next) => {
     }
   }
 
-  await userModel
-    .find({ phone: req.body.phone })
-    .then(async (user) => {
-      if (user.length >= 1) {
-        res.status(200).json({
-          success: true,
-          code: 0,
-          message: "Đăng kí tham gia thành công !",
-          data: user[0],
-        });
-        return;
-      } else {
-        const user = new userModel(req.body);
-        await user
+  await userModel.find({ phone: req.body.phone }).then(async (user) => {
+    if (user.length >= 1) {
+      await userModel.findById(user[0]._id).then((data) => {
+        req.body._id = user[0]._id;
+        req.body = JSON.parse(JSON.stringify(req.body));
+        for (let field in req.body) {
+          if (req.body.hasOwnProperty(field)) {
+            data[field] = req.body[field];
+          }
+        }
+        data
           .save()
-          .then(async (result) => {
+          .then(async (r) => {
             res.status(200).json({
               success: true,
               code: 0,
-              message: "Đăng kí tham gia thành công !",
-              data: result,
+              message: "Cập nhật thành công !",
+              data: r,
             });
+            await addTask({
+              _id: id,
+              email: req.body.email ? req.body.email : null,
+              zalo: req.body.phone,
+            });
+            sendEmail(user[0]._id).catch((err) => {
+              console.error(err);
+            });
+            sendZalo(user[0]._id).catch((err) => {
+              console.error(err);
+            });
+            return;
           })
           .catch((err) => {
-            res.status(500).json({
-              error: err,
+            console.log("s");
+            res.status(500).send({
               success: false,
-              code: 500,
+              code: -1,
+              message: err.message,
             });
           });
-        await addTask({
-          _id: id,
-          email: req.body.email ? req.body.email : null,
-          zalo: req.body.phone,
+      });
+      return;
+    } else {
+      req.body.urlQR = `${domainVcard}/v-card/${id}`;
+      const user = new userModel(req.body);
+      await user
+        .save()
+        .then(async (result) => {
+          res.status(200).json({
+            success: true,
+            code: 0,
+            message: "Đăng kí tham gia thành công !",
+            data: result,
+          });
+        })
+        .catch((err) => {
+          res.status(500).json({
+            error: err,
+            success: false,
+            code: 500,
+          });
         });
-        await sendEmail(id).catch((err) => {
-          console.error(err);
-        });
-        await sendZalo(id).catch((err) => {
-          console.error(err);
-        });
-        return;
-      }
-    })
-    .catch((err) => console.error(err));
-  // if (isExistUser) {
-  //   res.status(401).json({
-  //     success: false,
-  //     message: "Số điện thoại đã có người sử dụng !",
-  //   });
-  // } else {
-  //   const user = new userModel(req.body);
-  //   await user
-  //     .save()
-  //     .then(async (result) => {
-  //       console.log("fff");
-  //       res.status(200).json({
-  //         success: true,
-  //         code: 0,
-  //         message: "Đăng kí tham gia thành công !",
-  //         data: result,
-  //       });
-  //     })
-  //     .catch((err) => {
-  //       res.status(500).json({
-  //         error: err,
-  //         success: false,
-  //         code: 500,
-  //       });
-  //     });
-  //   addTask({
-  //     _id: id,
-  //     email: req.body.email ? req.body.email : null,
-  //     zalo: req.body.phone,
-  //   });
-  //   sendEmail(id);
-  //   sendZalo(id);
-  // }
+      await addTask({
+        _id: id,
+        email: req.body.email ? req.body.email : null,
+        zalo: req.body.phone,
+      });
+      await sendEmail(id).catch((err) => {
+        console.error(err);
+      });
+      await sendZalo(id).catch((err) => {
+        console.error(err);
+      });
+      return;
+    }
+  });
 };
+
+async function addTaskAndSendInvitation() {}
+
 export const getAll = async (req, res) => {
   try {
     const users = await userModel.find();
@@ -127,36 +128,36 @@ export const getAll = async (req, res) => {
   }
 };
 
-export const sendEmail = (data) => {
-  try {
-    if (!data.email) return;
-    const transporter = nodemailer.createTransport({
-      service: service,
-      auth: {
-        user: user,
-        pass: password,
-      },
-    });
-    let message = {
-      from: user,
-      to: data.email,
-      subject: "Thư mời tham gia lễ ra mắt Sàn Hoa FMP",
-      html: templateEmail(data),
-    };
-    return new Promise(function (resolve, reject) {
-      transporter
-        .sendMail(message)
-        .catch((error) => {
-          reject(new Error(error));
-        })
-        .then((result) => {
-          resolve(result);
-        });
-    });
-  } catch (error) {
-    console.log(error);
-  }
-};
+// export const sendEmail = (data) => {
+//   try {
+//     if (!data.email) return;
+//     const transporter = nodemailer.createTransport({
+//       service: service,
+//       auth: {
+//         user: user,
+//         pass: password,
+//       },
+//     });
+//     let message = {
+//       from: user,
+//       to: data.email,
+//       subject: "Thư mời tham gia lễ ra mắt Sàn Hoa FMP",
+//       html: templateEmail(data),
+//     };
+//     return new Promise(function (resolve, reject) {
+//       transporter
+//         .sendMail(message)
+//         .catch((error) => {
+//           reject(new Error(error));
+//         })
+//         .then((result) => {
+//           resolve(result);
+//         });
+//     });
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
 
 export const getById = async (req, res) => {
   try {
@@ -351,7 +352,7 @@ export const updateCheckin = async (req, res) => {
 
 export function getUrlQRCode(id) {
   return new Promise(function (resolve, reject) {
-    qr.toDataURL(id)
+    qr.toDataURL(`${domainVcard}/v-card/${id}`)
       .then(async (result) => {
         const data = await uploadS3Base64(
           bucketQRCODE,

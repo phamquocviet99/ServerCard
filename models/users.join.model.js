@@ -11,7 +11,6 @@ const schema = new mongoose.Schema(
     },
     address: {
       type: String,
-      require: true,
     },
     phone: {
       type: String,
@@ -32,6 +31,21 @@ const schema = new mongoose.Schema(
     position: {
       type: String,
       // require: true,
+    },
+    isBanking: {
+      type: Boolean,
+      require: true,
+      default: false,
+    },
+    urlQR: {
+      type: String,
+      require: true,
+    },
+    urlAvatar: {
+      type: String,
+      require: true,
+      default:
+        "https://s3-north1.viettelidc.com.vn/fmp-vcard-dev/v-card/XtR-_yZq31xmDnpYOm7DZ/v-card.jpeg",
     },
     isCheckIn: {
       type: Boolean,

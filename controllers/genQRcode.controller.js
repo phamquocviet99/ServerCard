@@ -1,7 +1,10 @@
 import qr from "qrcode";
+import dotenv from "dotenv";
 import { update } from "./taskSendInvitation.controller.js";
 import { createCanvas, loadImage, Image, registerFont } from "canvas";
 import usersJoinModel from "../models/users.join.model.js";
+dotenv.config();
+const domainVcard = process.env.DOMAIN_VCARD;
 export const genQRcode = async (req, res) => {
   if (!req.params.id)
     return res.status(500).json({
@@ -22,7 +25,7 @@ export const genQRcode = async (req, res) => {
 function sendQRcode(id, res) {
   if (!id) return;
   return new Promise(function (resolve, reject) {
-    qr.toDataURL(id)
+    qr.toDataURL(`${domainVcard}/v-card/${id}`)
       .then((result) => {
         resolve(result);
         res.status(200);
@@ -87,7 +90,7 @@ export const genImageInvitation = async (data, res) => {
 
     var base64 = null;
     await qr
-      .toDataURL(data._id)
+      .toDataURL(`${domainVcard}/v-card/${id}`)
       .then((result) => (base64 = result))
       .catch((error) => {
         res.status(500).send({ success: false, error: error });
@@ -163,7 +166,7 @@ export const genBase64ImageInvitation = async (data) => {
 
     var base64 = null;
     await qr
-      .toDataURL(data._id)
+      .toDataURL(`${domainVcard}/v-card/${data._id}`)
       .then((result) => (base64 = result))
       .catch((error) => {
         res.status(500).send({ success: false, error: error });
