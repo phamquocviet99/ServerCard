@@ -44,6 +44,7 @@ function sendQRcode(id, res) {
 }
 
 export const getImageInvitation = async (req, res) => {
+  console.log(req.params.id);
   if (!req.params.id)
     return res.status(500).json({
       error: err,
@@ -70,8 +71,8 @@ export const getImageInvitation = async (req, res) => {
       });
     })
     .catch((error) => {
-      return res.status(500).json({
-        error: err,
+      return res.status(550).json({
+        error: error,
         success: false,
         code: 500,
       });
@@ -90,7 +91,7 @@ export const genImageInvitation = async (data, res) => {
 
     var base64 = null;
     await qr
-      .toDataURL(`${domainVcard}/v-card/${id}`)
+      .toDataURL(`${domainVcard}/v-card/${data._id}`)
       .then((result) => (base64 = result))
       .catch((error) => {
         res.status(500).send({ success: false, error: error });
@@ -110,6 +111,7 @@ export const genImageInvitation = async (data, res) => {
       smallImageWidth,
       smallImageHeight
     );
+
     ctx.drawImage(smallImage, x, y, smallImageWidth, smallImageHeight);
 
     const textBlocks = [

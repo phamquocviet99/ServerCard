@@ -158,31 +158,16 @@ export async function sendZalo(id, tid) {
         data: {
           phone: userData.phone,
           apiKey: keyZalo,
-          message: `Cảm ơn quý ${userData.gender === "male" ? "Ông" : "Bà"} ${
+          message: `Thân chào quý ${userData.gender === "male" ? "ông" : "bà"}${
             userData.fullName
-          } đã đăng kí tham gia sự kiện ra mắt Sàn Hoa FLOWER MARKET PLACE FMP.`,
-        },
-      },
-      {
-        type: "text",
-        data: {
-          phone: userData.phone,
-          apiKey: keyZalo,
-          message: `Công Ty Cổ Phần FLOWER MARKET PLACE FMP xin chân thành cảm ơn sự hiện diện của quý ${
+          }. \nFMP hy vọng sẽ gặp quý ${
             userData.gender === "male" ? "ông" : "bà"
-          }.`,
-        },
-      },
-      {
-        type: "text",
-        data: {
-          phone: userData.phone,
-          apiKey: keyZalo,
-          message: `Đây là thư mời của Công Ty dành cho quý  ${
+          } ${userData.fullName}. \nCảm ơn quý ${
             userData.gender === "male" ? "ông" : "bà"
-          }.`,
+          } đã đăng ký tham dự cùng chúng tôi vào lúc 08:00 ngày 10/8/2023 tại Số 5 Nguyễn Tất Thành, Quận 4, Thành Phố Hồ Chí Minh.\nQuý mến và hân hạnh được đồng hành cùng quý vị !\n "FMP nở hoa - nuôi dưỡng cộng đồng"`,
         },
       },
+
       {
         type: "photo",
         data: {
