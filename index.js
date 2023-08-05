@@ -3,8 +3,6 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import userRoutes from "./routes/users.routes.js";
-import vCardRoutes from "./routes/vCard.routes.js";
 import usersJoinRoutes from "./routes/users.join.routes.js";
 import genQRcodeRoutes from "./routes/genQRcode.routes.js";
 import sponsorRoutes from "./routes/sponsor.routes.js";
@@ -13,9 +11,9 @@ import schedule from "node-schedule";
 import {
   checkSendEmail,
   checkSendZalo,
-  sendZalo,
+
 } from "./controllers/taskSendInvitation.controller.js";
-import { createCanvas, loadImage, Image } from "canvas";
+
 
 const app = express();
 dotenv.config();
@@ -30,12 +28,9 @@ app.use(
   })
 );
 
-app.use("/auth", userRoutes);
-app.use("/v-card", vCardRoutes);
 app.use("/event", usersJoinRoutes);
 app.use("/images", genQRcodeRoutes);
 app.use("/sponsor", sponsorRoutes);
-
 app.get("/sendEmail", checkSendEmail);
 app.get("/sendZalo", checkSendZalo);
 

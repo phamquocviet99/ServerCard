@@ -10,7 +10,6 @@ import {
   uploadS3Buffer,
 } from "../middleware/AWS_S3.js";
 import validator from "validator";
-import nodeHtmlToImage from "node-html-to-image";
 import {
   addTask,
   sendEmail,
