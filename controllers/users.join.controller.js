@@ -9,7 +9,7 @@ import { templateEmail } from "../template/templateEmail.js";
 import { uploadS3Base64, uploadS3Buffer } from "../middleware/AWS_S3.js";
 import validator from "validator";
 import nodeHtmlToImage from "node-html-to-image";
-import { addTask } from "./taskSendInvitation.controller.js";
+import { addTask, sendZalo } from "./taskSendInvitation.controller.js";
 // import puppeteer from "puppeteer";
 
 dotenv.config();
@@ -39,30 +39,74 @@ export const register = async (req, res, next) => {
     }
   }
 
-  req.body.urlQRcode = "urlQRCode";
-  const user = new userModel(req.body);
-  user
-    .save()
-    .then(async (result) => {
-      res.status(200).json({
-        success: true,
-        code: 0,
-        message: "Đăng kí tham gia thành công !",
-        data: result,
-      });
-    })
-    .catch((err) => {
-      res.status(500).json({
-        error: err,
+  await userModel.find({ phone: req.body.phone }).then(async (user) => {
+    if (user.length >= 1) {
+      return res.status(401).json({
         success: false,
-        code: 500,
+        message: "Số điện thoại đã có người sử dụng !",
       });
-    });
-  addTask({
-    _id: id,
-    email: req.body.email ? req.body.email : null,
-    zalo: req.body.phone,
+    } else {
+      const user = new userModel(req.body);
+      await user
+        .save()
+        .then(async (result) => {
+          res.status(200).json({
+            success: true,
+            code: 0,
+            message: "Đăng kí tham gia thành công !",
+            data: result,
+          });
+        })
+        .catch((err) => {
+          res.status(500).json({
+            error: err,
+            success: false,
+            code: 500,
+          });
+        });
+      await addTask({
+        _id: id,
+        email: req.body.email ? req.body.email : null,
+        zalo: req.body.phone,
+      });
+      await sendEmail(id);
+      await sendZalo(id);
+      return;
+    }
   });
+  // if (isExistUser) {
+  //   res.status(401).json({
+  //     success: false,
+  //     message: "Số điện thoại đã có người sử dụng !",
+  //   });
+  // } else {
+  //   const user = new userModel(req.body);
+  //   await user
+  //     .save()
+  //     .then(async (result) => {
+  //       console.log("fff");
+  //       res.status(200).json({
+  //         success: true,
+  //         code: 0,
+  //         message: "Đăng kí tham gia thành công !",
+  //         data: result,
+  //       });
+  //     })
+  //     .catch((err) => {
+  //       res.status(500).json({
+  //         error: err,
+  //         success: false,
+  //         code: 500,
+  //       });
+  //     });
+  //   addTask({
+  //     _id: id,
+  //     email: req.body.email ? req.body.email : null,
+  //     zalo: req.body.phone,
+  //   });
+  //   sendEmail(id);
+  //   sendZalo(id);
+  // }
 };
 export const getAll = async (req, res) => {
   try {
