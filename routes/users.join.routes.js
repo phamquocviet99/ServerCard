@@ -8,12 +8,13 @@ import {
   updateById,
 } from "../controllers/users.join.controller.js";
 import checkAuth from "../middleware/check-auth.js";
+import upload from "../middleware/multer.js";
 const router = express.Router();
-router.post("/", register);
+router.post("/", upload.single("urlAvatar"), register);
 router.get("/download", download);
 router.get("/", getAll);
 router.get("/:id", getById);
-router.put("/:id", updateById);
+router.put("/:id", upload.single("urlAvatar"), updateById);
 
 router.post("/checkin/:id", checkAuth, updateCheckin);
 

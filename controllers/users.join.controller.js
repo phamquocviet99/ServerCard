@@ -4,7 +4,11 @@ import dotenv from "dotenv";
 import { nanoid } from "../config/nanoid.js";
 import qr from "qrcode";
 import { templateEmail } from "../template/templateEmail.js";
-import { uploadS3Base64, uploadS3Buffer } from "../middleware/AWS_S3.js";
+import {
+  uploadS3,
+  uploadS3Base64,
+  uploadS3Buffer,
+} from "../middleware/AWS_S3.js";
 import validator from "validator";
 import nodeHtmlToImage from "node-html-to-image";
 import {
@@ -13,10 +17,11 @@ import {
   sendZalo,
 } from "./taskSendInvitation.controller.js";
 dotenv.config();
-
+const bucketVCARD = process.env.AWS_BUCKET_VCARD;
 const bucketQRCODE = process.env.AWS_BUCKET_QRCODE;
 const domainVcard = process.env.DOMAIN_VCARD;
 export const register = async (req, res, next) => {
+  const file = req.file;
   if (!req.body.fullName || !req.body.phone || !req.body.gender) {
     return res.status(400).send({
       success: false,
@@ -83,6 +88,25 @@ export const register = async (req, res, next) => {
       var id = nanoid();
       req.body._id = id;
       req.body.urlQR = `${domainVcard}/v-card/${id}`;
+      if (file) {
+        const resultImage = await uploadS3(
+          bucketVCARD,
+          "v-card",
+          id + "/" + "v-card.jpeg",
+          file
+        );
+
+        if (!resultImage.success) {
+          return res.status(500).json({
+            error: resultImage.error,
+            message: "Có lỗi trong quá trình upload ảnh",
+            success: false,
+          });
+        }
+        // console.log(resultImage);
+        req.body.urlAvatar = resultImage.url;
+        // console.log(data.urlAvatar);
+      }
       const user = new userModel(req.body);
       await user
         .save()
@@ -175,14 +199,35 @@ export const getById = async (req, res) => {
 export const updateById = async (req, res) => {
   try {
     if (req.params.id) {
-      await userModel.findById(req.params.id).then((data) => {
+      const file = req.file;
+      await userModel.findById(req.params.id).then(async (data) => {
+        if (file) {
+          const resultImage = await uploadS3(
+            bucketVCARD,
+            "v-card",
+            req.params.id + "/" + "v-card.jpeg",
+            file
+          );
+
+          if (!resultImage.success) {
+            return res.status(500).json({
+              error: resultImage.error,
+              message: "Có lỗi trong quá trình upload ảnh",
+              success: false,
+            });
+          }
+          // console.log(resultImage);
+          req.body.urlAvatar = resultImage.url;
+          // console.log(data.urlAvatar);
+        }
         req.body = JSON.parse(JSON.stringify(req.body));
         for (let field in req.body) {
           if (req.body.hasOwnProperty(field)) {
             data[field] = req.body[field];
           }
         }
-        data
+
+        await data
           .save()
           .then(async (r) => {
             return res.status(200).json({
