@@ -164,7 +164,7 @@ export async function sendZalo(id, tid) {
             userData.gender === "male" ? "ông" : "bà"
           } ${userData.fullName}. \nCảm ơn quý ${
             userData.gender === "male" ? "ông" : "bà"
-          } đã đăng ký tham dự cùng chúng tôi vào lúc 08:00 ngày 10/8/2023 tại Số 5 Nguyễn Tất Thành, Quận 4, Thành Phố Hồ Chí Minh.\nQuý mến và hân hạnh được đồng hành cùng quý vị !\n "FMP nở hoa - nuôi dưỡng cộng đồng"`,
+          } đã đăng ký tham dự cùng chúng tôi vào lúc 08:00 ngày 10/8/2023 tại Số 5 Nguyễn Tất Thành, Quận 4, Thành Phố Hồ Chí Minh. \nQuý mến và hân hạnh được đồng hành cùng quý vị!\n "FMP nở hoa - nuôi dưỡng cộng đồng"`,
         },
       },
 
