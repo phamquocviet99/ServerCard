@@ -4,7 +4,7 @@ export const templateEmail = (data) => {
   const domain = process.env.DOMAIN_SERVER;
 
   return ` <div>
-  <p>Thân chào quý ${data.gender === "male" ? "ông" : "bà"}${
+  <p>Thân chào quý ${data.gender === "male" ? "ông" : "bà"} ${
     data.fullName
   }.</p><p>FMP hy vọng sẽ gặp quý ${data.gender === "male" ? "ông" : "bà"} ${
     data.fullName
