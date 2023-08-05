@@ -1,12 +1,13 @@
 import sponsorModel from "../models/sponsor.model.js";
 
 import dotenv from "dotenv";
-import { nanoid } from "nanoid";
+
 import nodemailer from "nodemailer";
 
 import validator from "validator";
 
 import { addTask } from "./taskSendInvitation.controller.js";
+import { nanoid } from "../config/nanoid.js";
 // import puppeteer from "puppeteer";
 
 dotenv.config();
