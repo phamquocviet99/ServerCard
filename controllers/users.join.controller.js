@@ -119,8 +119,6 @@ export const register = async (req, res, next) => {
   });
 };
 
-async function addTaskAndSendInvitation() {}
-
 export const getAll = async (req, res) => {
   try {
     const users = await userModel.find();
@@ -129,37 +127,6 @@ export const getAll = async (req, res) => {
     res.status(500).json({ error: true });
   }
 };
-
-// export const sendEmail = (data) => {
-//   try {
-//     if (!data.email) return;
-//     const transporter = nodemailer.createTransport({
-//       service: service,
-//       auth: {
-//         user: user,
-//         pass: password,
-//       },
-//     });
-//     let message = {
-//       from: user,
-//       to: data.email,
-//       subject: "Thư mời tham gia lễ ra mắt Sàn Hoa FMP",
-//       html: templateEmail(data),
-//     };
-//     return new Promise(function (resolve, reject) {
-//       transporter
-//         .sendMail(message)
-//         .catch((error) => {
-//           reject(new Error(error));
-//         })
-//         .then((result) => {
-//           resolve(result);
-//         });
-//     });
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
 
 export const getById = async (req, res) => {
   try {
@@ -189,6 +156,50 @@ export const getById = async (req, res) => {
             success: false,
           });
         });
+    } else {
+      return res.status(200).send({
+        success: false,
+        code: -1,
+        message: "URL không hợp lệ",
+      });
+    }
+  } catch (err) {
+    return res.status(500).send({
+      success: false,
+      code: -1,
+      message: err.message,
+    });
+  }
+};
+
+export const updateById = async (req, res) => {
+  try {
+    if (req.params.id) {
+      await userModel.findById(req.params.id).then((data) => {
+        req.body = JSON.parse(JSON.stringify(req.body));
+        for (let field in req.body) {
+          if (req.body.hasOwnProperty(field)) {
+            data[field] = req.body[field];
+          }
+        }
+        data
+          .save()
+          .then(async (r) => {
+            return res.status(200).json({
+              success: true,
+              code: 0,
+              message: "Cập nhật thành công !",
+              data: r,
+            });
+          })
+          .catch((err) => {
+            return res.status(500).send({
+              success: false,
+              code: -1,
+              message: err.message,
+            });
+          });
+      });
     } else {
       return res.status(200).send({
         success: false,
