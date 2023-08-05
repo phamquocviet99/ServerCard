@@ -158,7 +158,7 @@ export async function sendZalo(id, tid) {
         data: {
           phone: userData.phone,
           apiKey: keyZalo,
-          message: `Thân chào quý ${userData.gender === "male" ? "ông" : "bà"}${
+          message: `Thân chào quý ${userData.gender === "male" ? "ông" : "bà"} ${
             userData.fullName
           }. \nFMP hy vọng sẽ gặp quý ${
             userData.gender === "male" ? "ông" : "bà"
