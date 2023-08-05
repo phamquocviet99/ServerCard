@@ -19,9 +19,6 @@ dotenv.config();
 const bucketQRCODE = process.env.AWS_BUCKET_QRCODE;
 const domainVcard = process.env.DOMAIN_VCARD;
 export const register = async (req, res, next) => {
-  var id = nanoid();
-  req.body._id = id;
-
   if (!req.body.fullName || !req.body.phone || !req.body.gender) {
     return res.status(400).send({
       success: false,
@@ -59,16 +56,19 @@ export const register = async (req, res, next) => {
               data: r,
             });
             await addTask({
-              _id: id,
+              _id: nanoid(),
+              uid: user[0]._id,
               email: req.body.email ? req.body.email : null,
               zalo: req.body.phone,
+            }).then((re) => {
+              sendEmail(user[0]._id, re._id).catch((err) => {
+                console.error(err);
+              });
+              sendZalo(user[0]._id, re._id).catch((err) => {
+                console.error(err);
+              });
             });
-            sendEmail(user[0]._id).catch((err) => {
-              console.error(err);
-            });
-            sendZalo(user[0]._id).catch((err) => {
-              console.error(err);
-            });
+
             return;
           })
           .catch((err) => {
@@ -82,6 +82,8 @@ export const register = async (req, res, next) => {
       });
       return;
     } else {
+      var id = nanoid();
+      req.body._id = id;
       req.body.urlQR = `${domainVcard}/v-card/${id}`;
       const user = new userModel(req.body);
       await user
@@ -102,15 +104,17 @@ export const register = async (req, res, next) => {
           });
         });
       await addTask({
-        _id: id,
+        _id: nanoid(),
+        uid: id,
         email: req.body.email ? req.body.email : null,
         zalo: req.body.phone,
-      });
-      await sendEmail(id).catch((err) => {
-        console.error(err);
-      });
-      await sendZalo(id).catch((err) => {
-        console.error(err);
+      }).then((re) => {
+        sendEmail(id, re._id).catch((err) => {
+          console.error(err);
+        });
+        sendZalo(id, re._id).catch((err) => {
+          console.error(err);
+        });
       });
       return;
     }

@@ -6,6 +6,9 @@ const schema = new mongoose.Schema(
       type: String,
       require: true,
     },
+    uid: {
+      type: String,
+    },
     email: {
       type: String,
     },

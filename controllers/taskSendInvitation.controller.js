@@ -31,19 +31,44 @@ export const checkSendEmail = async () => {
       isSentEmail: false,
       isErrorEmail: false,
     });
+
     for (let i = 0; i < listEmailNotSend.length; i++) {
-      taskSend.push(sendEmail(listEmailNotSend[i]._id));
+      await sendEmail(listEmailNotSend[i]._id)
+        .catch((err) => {
+          console.error("Lỗi ", listEmailNotSend[i]._id, err);
+        })
+        .then((r) => {
+          console.log(
+            ` ${listEmailNotSend[i]._id} tasks send email successfully`
+          );
+        });
     }
-    Promise.all(taskSend)
-      .then((results) => {
-        console.log(
-          ` ${listEmailNotSend.length} tasks send email successfully`
-        );
-      })
-      .catch((error) => {
-        console.error("Some tasks failed");
-        console.error(error);
+    try {
+      var taskSend = [];
+      const listEmailNotSend = await taskSendInvitationModel.find({
+        isSentEmail: false,
+        isErrorEmail: false,
       });
+      for (let i = 0; i < listEmailNotSend.length; i++) {
+        taskSend.push(
+          sendEmail(listEmailNotSend[i].uid, listEmailNotSend[i]._id)
+        );
+      }
+      Promise.all(taskSend)
+        .then((results) => {
+          console.log(
+            ` ${listEmailNotSend.length} tasks send email successfully`
+          );
+          results.forEach((element) => {
+            console.error(element);
+          });
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    } catch (error) {
+      console.error(error);
+    }
   } catch (error) {}
 };
 
@@ -55,7 +80,7 @@ export const checkSendZalo = async () => {
       isErrorZalo: false,
     });
     for (let i = 0; i < listZaloNotSend.length; i++) {
-      taskSend.push(sendZalo(listZaloNotSend[i]._id));
+      taskSend.push(sendZalo(listZaloNotSend[i].uid, listZaloNotSend[i]._id));
     }
     Promise.all(taskSend)
       .then((results) => {
@@ -72,7 +97,7 @@ export const checkSendZalo = async () => {
   }
 };
 
-export async function sendEmail(id) {
+export async function sendEmail(id, tid) {
   try {
     const transporter = nodemailer.createTransport({
       service: service,
@@ -81,7 +106,9 @@ export async function sendEmail(id) {
         pass: password,
       },
     });
-    const userData = await usersJoinModel.findById({ _id: id });
+    const userE = await usersJoinModel.find({ _id: id });
+    const userData = userE[0];
+    if (!userData) return new Error("Không tìm thấy đối tượng");
     let message = {
       from: { name: "Công Ty Cổ Phần FLOWER MARKET PLACE FMP", address: user },
       to: userData.email,
@@ -94,12 +121,12 @@ export async function sendEmail(id) {
         .catch((error) => {
           reject(new Error(error));
           console.error(error);
-          update(userData._id, {
+          update(tid, {
             isErrorEmail: true,
           });
         })
         .then((result) => {
-          update(userData._id, {
+          update(tid, {
             isSentEmail: true,
           });
           resolve(result);
@@ -111,13 +138,11 @@ export async function sendEmail(id) {
   }
 }
 
-export async function sendZalo(id) {
+export async function sendZalo(id, tid) {
   try {
     var dataImage = null;
-    const userData = await usersJoinModel.findById({
-      _id: id,
-    });
-
+    const userZ = await usersJoinModel.find({ _id: id });
+    const userData = userZ[0];
     if (!userData) return new Error("Không tìm thấy đối tượng");
 
     await genBase64ImageInvitation(userData)
@@ -176,7 +201,7 @@ export async function sendZalo(id) {
         if (mess.type === "text") {
           await sendTextZalo(mess.data).catch((err) => {
             error = true;
-            update(userData._id, {
+            update(tid, {
               isErrorZalo: true,
               errorZalo: err,
             });
@@ -185,7 +210,7 @@ export async function sendZalo(id) {
         } else {
           await sendPhotoZalo(mess.data).catch((err) => {
             error = true;
-            update(userData._id, {
+            update(tid, {
               isErrorZalo: true,
               errorZalo: err,
             });
@@ -193,12 +218,12 @@ export async function sendZalo(id) {
           });
         }
       }
-      await update(userData._id, {
+      await update(tid, {
         isSentZalo: true,
       });
     });
   } catch (error) {
-    update(userData._id, {
+    update(tid, {
       isErrorZalo: true,
       errorZalo: err,
     });
