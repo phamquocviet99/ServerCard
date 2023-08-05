@@ -1,6 +1,6 @@
 import qr from "qrcode";
 import { update } from "./taskSendInvitation.controller.js";
-import { createCanvas, loadImage, Image } from "canvas";
+import { createCanvas, loadImage, Image, registerFont } from "canvas";
 import usersJoinModel from "../models/users.join.model.js";
 export const genQRcode = async (req, res) => {
   if (!req.params.id)
@@ -79,7 +79,7 @@ export const genImageInvitation = async (data, res) => {
   try {
     const width = 1488; // Chiều rộng của ảnh nền
     const height = 1291; // Chiều cao của ảnh nền
-
+    registerFont("./fonts/123.ttf", { family: "Times New Roman" });
     const canvas = createCanvas(width, height);
     const ctx = canvas.getContext("2d");
     const backgroundImage = await loadImage("./template/template.png");
@@ -99,7 +99,7 @@ export const genImageInvitation = async (data, res) => {
     const x = (width - smallImageWidth) / 4 - 35; // Vị trí x để căn giữa
     const y = (height - smallImageHeight) / 2 + 30; // Vị trí y để căn giữa
     ctx.fillStyle = "black";
-    ctx.font = "italic 23px Arial";
+    ctx.font = "23px Times New Roman";
     ctx.fillText(
       "Mã QR Check-in sự kiện",
       x,
@@ -114,16 +114,16 @@ export const genImageInvitation = async (data, res) => {
         text: `${
           data.gender === "male" ? "Ông" : "Bà"
         } : ${data.fullName.trim()} `,
-        font: "italic bold 28px Times New Roman",
+        font: "28px Times New Roman",
         color: "#15803d",
       },
       {
         text: data.companyName
-          ? `${data.position ? data.position : ""} tại công ty ${
+          ? `${data.position ? data.position : ""} tại ${
               data.companyName ? data.companyName : ""
             }`
           : "- - - - - - - - - - - - - - - -",
-        font: "italic 23px Times New Roman",
+        font: "23px Times New Roman",
         color: "#15803d",
       },
     ];
@@ -155,7 +155,7 @@ export const genBase64ImageInvitation = async (data) => {
   try {
     const width = 1488; // Chiều rộng của ảnh nền
     const height = 1291; // Chiều cao của ảnh nền
-
+    registerFont("./fonts/123.ttf", { family: "Times New Roman" });
     const canvas = createCanvas(width, height);
     const ctx = canvas.getContext("2d");
     const backgroundImage = await loadImage("./template/template.png");
@@ -190,16 +190,16 @@ export const genBase64ImageInvitation = async (data) => {
         text: `${
           data.gender === "male" ? "Ông" : "Bà"
         } : ${data.fullName.trim()} `,
-        font: "italic bold 28px Times New Roman",
+        font: "28px Times New Roman",
         color: "#15803d",
       },
       {
         text: data.companyName
-          ? `${data.position ? data.position : ""} tại công ty ${
+          ? `${data.position ? data.position : ""} tại ${
               data.companyName ? data.companyName : ""
             }`
           : "- - - - - - - - - - - - - - - -",
-        font: "italic 23px Times New Roman",
+        font: "23px Times New Roman",
         color: "#15803d",
       },
     ];

@@ -41,10 +41,13 @@ export const register = async (req, res, next) => {
 
   await userModel.find({ phone: req.body.phone }).then(async (user) => {
     if (user.length >= 1) {
-      return res.status(401).json({
-        success: false,
-        message: "Số điện thoại đã có người sử dụng !",
+      res.status(200).json({
+        success: true,
+        code: 0,
+        message: "Đăng kí tham gia thành công !",
+        data: user[0],
       });
+      return;
     } else {
       const user = new userModel(req.body);
       await user
@@ -70,7 +73,9 @@ export const register = async (req, res, next) => {
         zalo: req.body.phone,
       });
       await sendEmail(id);
-      await sendZalo(id);
+      await sendZalo(id).catch((err) => {
+        console.error(err);
+      });
       return;
     }
   });
