@@ -110,7 +110,7 @@ export async function sendEmail(id, tid) {
     const userData = userE[0];
     if (!userData) return new Error("Không tìm thấy đối tượng");
     let message = {
-      from: { name: "Công Ty Cổ Phần FLOWER MARKET PLACE FMP", address: user },
+      from: { name: "Công Ty Cổ Phần FLOWER MARKETPLACE - FMP", address : "event@sanhoa.vn" },
       to: userData.email,
       subject: "Thư mời tham gia lễ ra mắt Sàn Hoa FMP",
       html: templateEmail(userData),
