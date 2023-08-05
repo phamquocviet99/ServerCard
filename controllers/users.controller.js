@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import validator from "validator";
-import { nanoid } from "nanoid";
+import { nanoid } from "../config/nanoid.js";
 
 dotenv.config();
 

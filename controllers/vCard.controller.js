@@ -2,7 +2,7 @@ import { deleteS3, uploadS3 } from "../middleware/AWS_S3.js";
 import decodeJWT from "../middleware/decodeJwt.js";
 import vCardModel from "../models/vCard.model.js";
 import validator from "validator";
-import { nanoid } from "nanoid";
+import { nanoid } from "../config/nanoid.js";
 import usersModel from "../models/users.model.js";
 const bucketVCARD = process.env.AWS_BUCKET_VCARD;
 export const post = async (req, res) => {

@@ -1,9 +1,7 @@
 import userModel from "../models/users.join.model.js";
 import excel from "excel4node";
 import dotenv from "dotenv";
-import { nanoid } from "nanoid";
-import nodemailer from "nodemailer";
-// import base64Img from "base64-img";
+import { nanoid } from "../config/nanoid.js";
 import qr from "qrcode";
 import { templateEmail } from "../template/templateEmail.js";
 import { uploadS3Base64, uploadS3Buffer } from "../middleware/AWS_S3.js";
