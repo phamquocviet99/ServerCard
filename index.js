@@ -11,6 +11,7 @@ import schedule from "node-schedule";
 import {
   checkSendEmail,
   checkSendZalo,
+  sendTest,
 
 } from "./controllers/taskSendInvitation.controller.js";
 
@@ -34,11 +35,11 @@ app.use("/sponsor", sponsorRoutes);
 app.get("/sendEmail", checkSendEmail);
 app.get("/sendZalo", checkSendZalo);
 
-// app.get("/test", sendZalo);
-schedule.scheduleJob("*/10 * * * *", function () {
-  checkSendEmail();
-  checkSendZalo();
-});
+app.get("/test", sendTest);
+// schedule.scheduleJob("*/10 * * * *", function () {
+//   checkSendEmail();
+//   checkSendZalo();
+// });
 
 app.use((error, req, res, next) => {
   if (error instanceof multer.MulterError) {

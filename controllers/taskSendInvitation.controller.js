@@ -110,7 +110,10 @@ export async function sendEmail(id, tid) {
     const userData = userE[0];
     if (!userData) return new Error("Không tìm thấy đối tượng");
     let message = {
-      from: { name: "Công Ty Cổ Phần FLOWER MARKETPLACE - FMP", address : "event@sanhoa.vn" },
+      from: {
+        name: "Công Ty Cổ Phần FLOWER MARKETPLACE - FMP",
+        address: "event@sanhoa.vn",
+      },
       to: userData.email,
       subject: "Thư mời tham gia lễ ra mắt Sàn Hoa FMP",
       html: templateEmail(userData),
@@ -158,13 +161,9 @@ export async function sendZalo(id, tid) {
         data: {
           phone: userData.phone,
           apiKey: keyZalo,
-          message: `Thân chào quý ${userData.gender === "male" ? "ông" : "bà"} ${
+          message: `Cảm ơn quý ${userData.gender === "male" ? "ông" : "bà"} ${
             userData.fullName
-          }. \nFMP hy vọng sẽ gặp quý ${
-            userData.gender === "male" ? "ông" : "bà"
-          } ${userData.fullName}. \nCảm ơn quý ${
-            userData.gender === "male" ? "ông" : "bà"
-          } đã đăng ký tham dự cùng chúng tôi vào lúc 08:00 ngày 10/8/2023 tại Số 5 Nguyễn Tất Thành, Quận 4, Thành Phố Hồ Chí Minh. \nQuý mến và hân hạnh được đồng hành cùng quý vị!\n "FMP nở hoa - nuôi dưỡng cộng đồng"`,
+          } đã đăng kí tham gia sự kiện lễ ra mắt Sàn Hoa FMP !`,
         },
       },
 
