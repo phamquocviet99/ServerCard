@@ -11,7 +11,7 @@ import schedule from "node-schedule";
 import {
   checkSendEmail,
   checkSendZalo,
-  sendTest,
+  // sendTest,
 
 } from "./controllers/taskSendInvitation.controller.js";
 
@@ -35,7 +35,7 @@ app.use("/sponsor", sponsorRoutes);
 app.get("/sendEmail", checkSendEmail);
 app.get("/sendZalo", checkSendZalo);
 
-app.get("/test", sendTest);
+// app.get("/test", sendTest);
 // schedule.scheduleJob("*/10 * * * *", function () {
 //   checkSendEmail();
 //   checkSendZalo();
